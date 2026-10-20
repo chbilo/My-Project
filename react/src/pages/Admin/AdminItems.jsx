@@ -163,7 +163,7 @@ const AdminItems = () => {
                   <label>תת-קטגוריה<select name='subcategory' defaultValue={item.subcategory || ''}><option value=''>ללא תת-קטגוריה</option>{getSubcategoriesByCategory(item.category).map((subcategory) => <option key={subcategory} value={subcategory}>{subcategory}</option>)}</select></label>
                   <label>כמות<input name='quantity' type='number' min='0' defaultValue={item.quantity ?? 0} /></label>
                   <label>צבעים (מופרדים בפסיק)<input name='colors' type='text' defaultValue={(item.colors || []).join(', ')} /></label>
-                  <label className='admin-checkbox'><input name='isAvailable' type='checkbox' defaultChecked={item.isAvailable !== false} /> זמין להשכרה</label>
+                  <label className='admin-checkbox'><input name='isAvailable' type='checkbox' defaultChecked={item.isAvailable !== false} /> זמין להשאלה</label>
 
                   <div className='admin-image-gallery'>
                     {(reorderedImagesByItem[item._id] || item.images || []).filter((image) => !(removedImagesByItem[item._id] || []).includes(image)).map((image) => (

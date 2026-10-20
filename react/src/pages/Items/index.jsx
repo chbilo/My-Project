@@ -5,7 +5,7 @@ import { AuthContext } from '../../contexts/AuthContext'
 import { CartContext } from '../../contexts/CartContext'
 import DatePicker from '../../components/DatePicker'
 import mapsHeadingImage from '../../assets/3.png'
-import centersHeadingImage from '../../assets/2 (1).png'
+import centersHeadingImage from '../../assets/2.png'
 import barToolsHeadingImage from '../../assets/1.png'
 import addIcon from '../../assets/icons/add.gif'
 import {
@@ -95,7 +95,9 @@ const Items = () => {
     )
   }
 
-  const categoryItems = items.filter((item) => item.category === category.name)
+  const categoryItems = items
+    .filter((item) => item.category === category.name)
+    .sort((left, right) => (left.code || '').localeCompare(right.code || '', 'he', { numeric: true }))
 
   const handleColorChange = (color) => {
     setSelectedColors((prev) =>
@@ -199,6 +201,9 @@ const Items = () => {
           <div className='items-catalog-heading-art'>
             <img className='items-catalog-heading-image' src={categoryHeadingImages[categorySlug]} alt='' />
           </div>
+          <p className='items-catalog-cost'>
+            עלות: {category.rentalLabel} — {category.rentalFee} ש"ח ללא הגבלה
+          </p>
         </header>
 
         <aside className='items-filter' aria-label='סינון מוצרים'>

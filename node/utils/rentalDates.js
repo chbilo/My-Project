@@ -18,7 +18,7 @@ const getItemDateRange = (eventDate, category) => {
 }
 
 const dateRangesOverlap = (pickupA, returnA, pickupB, returnB) => {
-  return pickupA <= returnB && pickupB <= returnA
+  return pickupA < returnB && pickupB < returnA
 }
 
 module.exports = {

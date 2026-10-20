@@ -116,13 +116,13 @@ const AdminRentals = () => {
   })
 
   return (
-    <AdminShell title='השכרות' description='צפייה בהזמנות ועדכון מצב הטיפול בהן.'>
-      {loading && <p className='admin-state is-loading' role='status'>טוען השכרות...</p>}
+    <AdminShell title='השאלות' description='צפייה בהזמנות ועדכון מצב הטיפול בהן.'>
+      {loading && <p className='admin-state is-loading' role='status'>טוען השאלות...</p>}
       {!loading && error && <p className='error-message'>{error}</p>}
       {!loading && !error && rentals.length === 0 && <p className='admin-state is-empty' role='status'>אין הזמנות עדיין.</p>}
       {!loading && !error && rentals.length > 0 && (
         <>
-          <section className='admin-rentals-toolbar' aria-label='חיפוש וסינון השכרות'>
+          <section className='admin-rentals-toolbar' aria-label='חיפוש וסינון השאלות'>
             <label className='admin-rentals-search'>
               <span>חיפוש</span>
               <input
@@ -150,11 +150,11 @@ const AdminRentals = () => {
             </button>
           </section>
 
-          <p className='admin-rentals-count' aria-live='polite'>מציג {filteredRentals.length} מתוך {rentals.length} השכרות</p>
+          <p className='admin-rentals-count' aria-live='polite'>מציג {filteredRentals.length} מתוך {rentals.length} השאלות</p>
         </>
       )}
       {!loading && !error && rentals.length > 0 && (filteredRentals.length === 0 ? (
-        <p className='admin-state is-empty' role='status'>לא נמצאו השכרות התואמות לחיפוש ולתאריכים.</p>
+        <p className='admin-state is-empty' role='status'>לא נמצאו השאלות התואמות לחיפוש ולתאריכים.</p>
       ) : <ul className='admin-rentals-list'>
         {filteredRentals.map((rental) => <li key={rental._id} className='admin-rental-card'>
           <div className='order-header'>

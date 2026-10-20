@@ -5,14 +5,14 @@ import api from '../../api/axios'
 import AdminShell from './AdminShell'
 
 const cards = [
-  { to: '/admin/rentals', title: 'השכרות', text: 'צפייה בהזמנות ועדכון הסטטוס שלהן.' },
+  { to: '/admin/rentals', title: 'השאלות', text: 'צפייה בהזמנות ועדכון הסטטוס שלהן.' },
   { to: '/admin/occupancy', title: 'תפוסת כלים', text: 'בדיקת מועדי איסוף והחזרה של כל כלי.' },
   { to: '/admin/users', title: 'משתמשים', text: 'צפייה ברשימת המשתמשים ובהרשאות שלהם.' },
   { to: '/admin/items', title: 'מוצרים', text: 'צפייה, עריכה ומחיקה של מוצרי הקטלוג.' },
   { to: '/admin/items/new', title: 'מוצר חדש', text: 'הוספת מוצר חדש לקטלוג.' },
   { to: '/admin/admins/new', title: 'מנהל חדש', text: 'יצירת משתמש מנהל נוסף.' },
   { to: '/admin/inspirations', title: 'תמונות השראה', text: 'ניהול התמונות שמופיעות בגלריה.' },
-  { to: '/admin/closed-dates', title: 'ימים סגורים', text: 'ניהול ימים שבהם לא ניתן לבצע השכרות.' }
+  { to: '/admin/closed-dates', title: 'ימים סגורים', text: 'ניהול ימים שבהם לא ניתן לבצע השאלות.' }
 ]
 
 const AdminHome = () => {
@@ -59,7 +59,7 @@ const AdminHome = () => {
   return (
     <AdminShell
       title='לוח בקרה למנהל'
-      description='כל מה שצריך כדי לנהל את הקטלוג וההשכרות במקום אחד.'
+      description='כל מה שצריך כדי לנהל את הקטלוג וההשאלות במקום אחד.'
       className='admin-home-page'
     >
       <section className='admin-metrics' aria-label='נתוני האתר' aria-busy={summaryLoading}>

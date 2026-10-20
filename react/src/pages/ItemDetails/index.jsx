@@ -77,7 +77,7 @@ const ItemDetails = () => {
         </div>
         <div className='item-details-content'>
           <p className={`item-details-status${item.isAvailable ? ' available' : ' unavailable'}`}>
-            {item.isAvailable ? 'זמין להשכרה' : 'לא זמין כרגע'}
+            {item.isAvailable ? 'זמין להשאלה' : 'לא זמין כרגע'}
           </p>
           <h1>{getItemLabel(item)}</h1>
           <p className='item-details-description'>{item.description || 'אין תיאור'}</p>

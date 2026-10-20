@@ -24,7 +24,7 @@ const AdminNewItem = () => {
     } catch (err) { setState({ loading: false, error: err.response?.data?.message || err.message || 'שגיאה ביצירת מוצר', success: '' }) }
   }
 
-  return <AdminShell title='יצירת מוצר חדש' description='הוסף מוצר חדש לקטלוג ההשכרה.'><section className='admin-create'><form onSubmit={submit} className='admin-form'>
+  return <AdminShell title='יצירת מוצר חדש' description='הוסף מוצר חדש לקטלוג הפריטים להשאלה.'><section className='admin-create'><form onSubmit={submit} className='admin-form'>
     <label>תיאור<textarea name='description' rows='3' /></label>
     <label>קבוצת מידות<input name='variantGroupId' type='text' placeholder='אותו מזהה לכל מידות אותו מוצר' /></label>
     <label>גודל<input name='size' type='text' /></label>

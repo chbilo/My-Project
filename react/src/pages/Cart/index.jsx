@@ -5,6 +5,20 @@ import { CartContext } from '../../contexts/CartContext'
 import { AuthContext } from '../../contexts/AuthContext'
 import DatePicker from '../../components/DatePicker'
 import addIcon from '../../assets/icons/add.gif'
+import { ITEM_CATEGORIES } from '../../constants/itemCategories'
+
+const addDaysToDate = (date, days) => {
+  const result = new Date(`${date}T00:00:00`)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
+const formatRentalDate = (date) => date.toLocaleDateString('he-IL', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+})
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, totalItems, clearCart, cartLoading } = useContext(CartContext)
@@ -12,10 +26,25 @@ const Cart = () => {
   const navigate = useNavigate()
   const [eventDate, setEventDate] = useState('')
   const [notes, setNotes] = useState('')
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [unavailableItems, setUnavailableItems] = useState({})
   const today = new Date().toISOString().split('T')[0]
+  const cartCategories = [...new Set(items.map((item) => item.category))]
+  const rentalCostBreakdown = ITEM_CATEGORIES
+    .filter((category) => cartCategories.includes(category.name))
+    .map(({ name, rentalLabel, rentalFee }) => ({ name, label: rentalLabel, fee: rentalFee }))
+  const unknownCategories = cartCategories.filter(
+    (categoryName) => !ITEM_CATEGORIES.some((category) => category.name === categoryName)
+  )
+  const totalRentalCost = rentalCostBreakdown.reduce((total, category) => total + category.fee, 0)
+  const returnDates = eventDate
+    ? rentalCostBreakdown.map((category) => ({
+        ...category,
+        date: formatRentalDate(addDaysToDate(eventDate, category.name === 'מפות' ? 3 : 1))
+      }))
+    : []
 
   useEffect(() => {
     if (items.length === 0) {
@@ -86,6 +115,16 @@ const Cart = () => {
       return
     }
 
+    if (!termsAccepted) {
+      setError('יש לאשר את תקנון ההשאלה לפני שליחת ההזמנה.')
+      return
+    }
+
+    if (unknownCategories.length > 0) {
+      setError(`לא ניתן לחשב את עלות ההשאלה עבור הקטגוריות: ${unknownCategories.join(', ')}`)
+      return
+    }
+
     setSubmitting(true)
     try {
       const availabilityResponse = await api.get('items', { params: { eventDate } })
@@ -116,7 +155,9 @@ const Cart = () => {
       navigate('/my-orders', {
         state: {
           successMessage: 'ההזמנה נשלחה בהצלחה וממתינה לאישור.',
-          showInspirationInvite: true
+          showInspirationInvite: true,
+          rentalCostBreakdown,
+          totalRentalCost
         }
       })
     } catch (err) {
@@ -214,8 +255,53 @@ const Cart = () => {
       ) : (
         <section className='cart-checkout'>
           <h2>שליחת הזמנה</h2>
+          <section className='cart-rental-cost' aria-label='חישוב עלות ההשאלה'>
+            <h3>עלות ההשאלה</h3>
+            {unknownCategories.length > 0 ? (
+              <p className='error-message'>
+                אין תעריף מוגדר עבור: {unknownCategories.join(', ')}.
+              </p>
+            ) : rentalCostBreakdown.length > 0 ? (
+              <>
+                <ul>
+                  {rentalCostBreakdown.map((category) => (
+                    <li key={category.name}>
+                      <span>{category.label} (ללא הגבלת כמות)</span>
+                      <strong>{category.fee} ש"ח</strong>
+                    </li>
+                  ))}
+                </ul>
+                <p className='cart-rental-cost-total'>
+                  <span>סה"כ לתשלום</span>
+                  <strong>{totalRentalCost} ש"ח</strong>
+                </p>
+                <p className='cart-rental-equation'>
+                  חישוב: {rentalCostBreakdown.map((category) => category.fee).join(' + ')} = {totalRentalCost} ש"ח
+                </p>
+              </>
+            ) : (
+              <p>לא ניתן לחשב את עלות ההשאלה כרגע.</p>
+            )}
+          </section>
           <form onSubmit={handleSubmitOrder} className='cart-checkout-form'>
             <label>תאריך אירוע<DatePicker value={eventDate} min={today} onChange={setEventDate} /></label>
+            {eventDate && (
+              <section className='cart-date-summary' aria-live='polite' aria-label='תאריכי איסוף והחזרה'>
+                <h3>מועדי איסוף והחזרה</h3>
+                <p>
+                  <strong>איסוף:</strong> {formatRentalDate(addDaysToDate(eventDate, -1))} — יום לפני האירוע.
+                </p>
+                {returnDates.map((category) => (
+                  <p key={category.name}>
+                    <strong>החזרת {category.label}:</strong> {category.date}
+                    {category.name === 'מפות' ? ' — שלושה ימים אחרי האירוע.' : ' — יום אחרי האירוע.'}
+                  </p>
+                ))}
+                <p className='cart-date-summary-note'>
+                  האיסוף וההחזרה מתקיימים לאחר 19:30. יש להתקשר בין 9:00 ל-12:00 כדי לתאם את השעה.
+                </p>
+              </section>
+            )}
             <label>
               הערות
               <textarea
@@ -224,6 +310,15 @@ const Cart = () => {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder='כתובת, שעת איסוף, או כל פרט נוסף'
               />
+            </label>
+            <label className='cart-terms-acceptance'>
+              <input
+                type='checkbox'
+                checked={termsAccepted}
+                onChange={(event) => setTermsAccepted(event.target.checked)}
+                required
+              />
+              <span>קראתי ואני מאשר/ת את <Link to='/terms'>תקנון ההשאלה</Link>.</span>
             </label>
             {error && <p className='error-message'>{error}</p>}
             <button type='submit' disabled={submitting}>

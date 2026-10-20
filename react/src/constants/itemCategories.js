@@ -2,12 +2,16 @@ export const ITEM_CATEGORIES = [
   {
     slug: 'maps',
     name: 'מפות',
+    rentalLabel: 'מפות וכיסויים',
+    rentalFee: 20,
     prefix: 'MP',
     subcategories: []
   },
   {
     slug: 'table-centers',
     name: 'מרכזי שולחן',
+    rentalLabel: 'מרכזי שולחן',
+    rentalFee: 30,
     prefix: 'MS',
     subcategories: [
       { name: 'אגרטל', prefix: 'AG' },
@@ -20,11 +24,13 @@ export const ITEM_CATEGORIES = [
   {
     slug: 'bar-tools',
     name: 'כלים לבר',
+    rentalLabel: 'כלים לבר',
+    rentalFee: 50,
     prefix: 'KB',
     subcategories: [
       { name: 'קערה', prefix: 'KR' },
       { name: 'הגבהה', prefix: 'HG' },
-      { name: 'מגש זכוכית', prefix: 'MZ' },
+      { name: 'מגש', prefix: 'MZ' },
       { name: 'מגש על רגל', prefix: 'MR' },
       { name: 'אחר', prefix: 'OT' }
     ]

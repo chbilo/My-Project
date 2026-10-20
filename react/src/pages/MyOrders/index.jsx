@@ -96,6 +96,26 @@ const MyOrders = () => {
       {location.state?.successMessage && (
         <p className='success-message'>{location.state.successMessage}</p>
       )}
+      {location.state?.rentalCostBreakdown?.length > 0 && (
+        <section className='order-cost-summary' aria-label='חישוב עלות ההזמנה'>
+          <h2>סכום לתשלום עבור ההזמנה</h2>
+          <ul>
+            {location.state.rentalCostBreakdown.map((category) => (
+              <li key={category.name}>
+                <span>{category.label} (ללא הגבלת כמות)</span>
+                <strong>{category.fee} ש"ח</strong>
+              </li>
+            ))}
+          </ul>
+          <p className='cart-rental-cost-total'>
+            <span>סה"כ לתשלום</span>
+            <strong>{location.state.totalRentalCost} ש"ח</strong>
+          </p>
+          <p className='cart-rental-equation'>
+            חישוב: {location.state.rentalCostBreakdown.map((category) => category.fee).join(' + ')} = {location.state.totalRentalCost} ש"ח
+          </p>
+        </section>
+      )}
       {location.state?.showInspirationInvite && (
         <section className='order-success-box'>
           <h2>שמחים שהזמנתם מאיתנו!</h2>

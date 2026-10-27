@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import api, { getUploadUrl } from '../../api/axios'
-import { getCategoryBySlug, getCategoryPath, getItemLabel } from '../../constants/itemCategories'
+import { getCategoryPath, getItemLabel } from '../../constants/itemCategories'
 
 const ItemDetails = () => {
-  const { itemId } = useParams()
+  const { categorySlug, itemId } = useParams()
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -47,7 +47,7 @@ const ItemDetails = () => {
   return (
     <main className='item-details-page'>
       <Link
-        to={getCategoryPath(getCategoryBySlug(item.category)?.slug || 'maps')}
+        to={getCategoryPath(categorySlug)}
         className='cart-link'
       >
         חזרה לקטגוריה

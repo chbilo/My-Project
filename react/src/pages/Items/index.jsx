@@ -7,6 +7,9 @@ import DatePicker from '../../components/DatePicker'
 import mapsHeadingImage from '../../assets/3.png'
 import centersHeadingImage from '../../assets/2.png'
 import barToolsHeadingImage from '../../assets/1.png'
+import mapsBadge from '../../assets/Pink circular Hebrew badge collection-1.png'
+import centersBadge from '../../assets/Pink floral badge with transparent background-2.png'
+import barToolsBadge from '../../assets/Pink Hebrew vase circle badge-3.png'
 import addIcon from '../../assets/icons/add.gif'
 import {
   getCategoryBySlug,
@@ -19,6 +22,12 @@ const categoryHeadingImages = {
   maps: mapsHeadingImage,
   'table-centers': centersHeadingImage,
   'bar-tools': barToolsHeadingImage
+}
+
+const categoryCircleImages = {
+  maps: mapsBadge,
+  'table-centers': centersBadge,
+  'bar-tools': barToolsBadge
 }
 
 const Items = () => {
@@ -308,7 +317,7 @@ const Items = () => {
                   <div className='item-card-header'>
                     <h2>
                       <Link to={`/items/${categorySlug}/${item._id}`} className='item-title-link'>
-                        {getItemLabel(group.items[0])}
+                        {getItemLabel(item)}
                       </Link>
                     </h2>
                     <p>{item.description || 'אין תיאור'}</p>
@@ -409,6 +418,21 @@ const Items = () => {
           </section>
         </div>
       </div>
+
+      <nav className='category-circle-links' aria-label='קטגוריות נוספות'>
+        {ITEM_CATEGORIES.filter((entry) => entry.slug !== category.slug).map((entry) => (
+          <Link
+            key={entry.slug}
+            to={getCategoryPath(entry.slug)}
+            className='category-circle-link'
+          >
+            <span className='category-circle-visual'>
+              <img src={categoryCircleImages[entry.slug]} alt='' />
+            </span>
+            <span className='category-circle-label'>{entry.name}</span>
+          </Link>
+        ))}
+      </nav>
     </main >
   )
 }

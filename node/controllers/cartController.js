@@ -16,7 +16,7 @@ const updateCart = async (req, res) => {
   const cart = await Cart.findOneAndUpdate(
     { user: userId },
     { items },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   )
 
   res.json(cart.items)

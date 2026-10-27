@@ -1,8 +1,8 @@
-require("dotenv").config()
+const path = require('node:path')
+require("dotenv").config({ path: path.join(__dirname, '.env') })
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
-const path = require('path')
 const corsOptions = require("./config/corsOptions")
 const connectDB = require("./config/connectDB")
 const PORT = process.env.PORT || 7100
@@ -58,7 +58,6 @@ ${PORT}`))
 mongoose.connection.on('error', err => {
     console.log(err)
 })
-
 
 
 

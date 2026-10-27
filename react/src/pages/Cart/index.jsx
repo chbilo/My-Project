@@ -154,7 +154,7 @@ const Cart = () => {
       clearCart()
       navigate('/my-orders', {
         state: {
-          successMessage: 'ההזמנה נשלחה בהצלחה וממתינה לאישור.',
+          successMessage: 'ההזמנה נשלחה בהצלחה וממתינה לאישור. כדי לאשר את ההזמנה, יש להתקשר אלינו למספר',
           showInspirationInvite: true,
           rentalCostBreakdown,
           totalRentalCost

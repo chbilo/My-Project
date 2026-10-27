@@ -94,7 +94,10 @@ const MyOrders = () => {
       <h1>ההזמנות שלי</h1>
       {loading && <p>טוען הזמנות...</p>}
       {location.state?.successMessage && (
-        <p className='success-message'>{location.state.successMessage}</p>
+        <p className='success-message'>
+          {location.state.successMessage}{' '}
+          <a href='tel:0527140236'>052-7140236</a>
+        </p>
       )}
       {location.state?.rentalCostBreakdown?.length > 0 && (
         <section className='order-cost-summary' aria-label='חישוב עלות ההזמנה'>

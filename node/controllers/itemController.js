@@ -145,7 +145,7 @@ const updateItem = async (req, res) => {
       ...existing.toObject(),
       ...data
     })
-    const updated = await Item.findByIdAndUpdate(req.params.id, data, { new: true })
+    const updated = await Item.findByIdAndUpdate(req.params.id, data, { returnDocument: 'after' })
     if (!updated) return res.status(404).json({ message: 'Item not found' })
     res.json(updated)
   } catch (err) {

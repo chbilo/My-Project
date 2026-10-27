@@ -8,6 +8,8 @@ import Contact from './pages/Contact/index'
 import Profile from './pages/Profile/index'
 import Login from './pages/Profile/Login'
 import Register from './pages/Profile/Register'
+import ForgotPassword from './pages/Profile/ForgotPassword'
+import ResetPassword from './pages/Profile/ResetPassword'
 import Account from './pages/Profile/Account'
 import AdminHome from './pages/Admin/AdminHome'
 import AdminRentals from './pages/Admin/AdminRentals'
@@ -47,8 +49,10 @@ function App() {
               <Route index element={<Navigate to='login' replace />} />
               <Route path='login' element={<Login />} />
               <Route path='register' element={<Register />} />
+              <Route path='forgot-password' element={<ForgotPassword />} />
               <Route path='account' element={<Account />} />
             </Route>
+            <Route path='reset-password' element={<ResetPassword />} />
             <Route path='admin'>
               <Route index element={<AdminHome />} />
               <Route path='rentals' element={<AdminRentals />} />

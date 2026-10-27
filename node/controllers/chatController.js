@@ -1,5 +1,6 @@
 const { ai, hasValidGeminiKey } = require('../config/google')
 const Item = require('../models/Item')
+const { Resend } = require('resend')
 const fs = require('node:fs/promises')
 const path = require('node:path')
 const sharp = require('sharp')
@@ -19,6 +20,35 @@ const imageMimeTypes = {
 
 const maxSourceImageSize = 20 * 1024 * 1024
 const maxTotalImageSize = 14 * 1024 * 1024
+
+const sendGeneratedImageEmail = async (imageData, imageMimeType) => {
+    if (!process.env.RESEND_API_KEY) {
+        throw new Error('RESEND_API_KEY is missing')
+    }
+
+    const extensionByMimeType = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp'
+    }
+    const extension = extensionByMimeType[imageMimeType] || 'png'
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    const { error } = await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'האתר שלי <onboarding@resend.dev>',
+        to: process.env.ADMIN_NOTIFICATION_EMAIL || 'chayamb0236@gmail.com',
+        subject: 'הדמיה חדשה נוצרה באתר',
+        html: '<p>מצורפת ההדמיה שנוצרה באמצעות יועץ העיצוב.</p>',
+        attachments: [{
+            filename: `event-visualization.${extension}`,
+            content: imageData,
+            contentType: imageMimeType
+        }]
+    })
+
+    if (error) {
+        throw error
+    }
+}
 
 const readProductImage = async (imagePath) => {
     if (typeof imagePath !== 'string' || !imagePath.startsWith('/uploads/')) {
@@ -292,6 +322,7 @@ ${reply}
 - בבקשה לעיצוב שולחן: הצג שולחן לפי הבקשה. השתמש במפות מקטגוריית "מפות" ובמרכזי שולחן מקטגוריית "מרכזי שולחן". הוסף כיסאות ומקומות ישיבה רק אם הם מתאימים לבקשה.
 - אם מבוקשים גם בר וגם שולחנות: הצג את אזור הבר ואת שולחנות האורחים כאזורים נפרדים. השתמש בכלים לבר באזור הבר ובמרכזי שולחן על שולחנות האורחים.
 - מותר לשנות או להוסיף את התוכן שבתוך כלי ההגשה לפי האירוע, למשל פירות, קינוחים, שתייה או פרחים. שמור על מראה הכלי עצמו.
+- אל תציג אנשים כלל — לא בחזית, לא ברקע, לא בהשתקפויות ולא כצלליות.
 - אל תוסיף כיתוב או לוגו. התמונה היא הדמיה להמחשה.
 `
 
@@ -325,6 +356,15 @@ ${reply}
 
             const image =
                 `data:${imageMimeType};base64,${generatedImage.data}`
+
+            sendGeneratedImageEmail(
+                generatedImage.data,
+                imageMimeType
+            ).catch((emailError) => {
+                console.error('[chat] Generated image email failed:', {
+                    message: emailError.message || 'Unknown email error'
+                })
+            })
 
             return res.json({ reply, image })
         } catch (imageError) {

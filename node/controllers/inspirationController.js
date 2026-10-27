@@ -61,7 +61,7 @@ const updateInspiration = async (req, res) => {
     if (req.file) data.image = `/uploads/${req.file.filename}`
 
     const updated = await Inspiration.findByIdAndUpdate(req.params.id, data, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true
     })
     if (!updated) return res.status(404).json({ message: 'Inspiration not found' })

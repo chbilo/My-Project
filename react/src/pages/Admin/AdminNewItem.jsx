@@ -32,6 +32,7 @@ const AdminNewItem = () => {
     <label>קטגוריה<select name='category' value={category} onChange={(event) => setCategory(event.target.value)} required><option value=''>בחר קטגוריה</option>{ITEM_CATEGORIES.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}</select></label>
     {subcategories.length > 0 && <label>תת-קטגוריה<select name='subcategory' required><option value=''>בחר תת-קטגוריה</option>{subcategories.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>}
     <label>כמות<input name='quantity' type='number' min='0' defaultValue='0' /></label>
+    <label>תוספת מחיר לכל יחידה (ש״ח)<input name='extraRentalFee' type='number' min='0' step='1' defaultValue='0' /></label>
     <label>תמונות<input name='images' type='file' accept='image/*' multiple /></label>
     <label>צבעים (מופרדים בפסיק)<input name='colors' type='text' /></label>
     <button type='submit' disabled={state.loading}>{state.loading ? 'שולח...' : 'צור מוצר'}</button>

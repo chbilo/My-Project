@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext'
 import DatePicker from '../../components/DatePicker'
 import addIcon from '../../assets/icons/add.gif'
 import { ITEM_CATEGORIES } from '../../constants/itemCategories'
+import { formatHebrewDate } from '../../utils/dateLabels'
 
 const addDaysToDate = (date, days) => {
   const result = new Date(`${date}T00:00:00`)
@@ -13,7 +14,7 @@ const addDaysToDate = (date, days) => {
   return result
 }
 
-const formatRentalDate = (date) => date.toLocaleDateString('he-IL', {
+const formatRentalDate = (date) => formatHebrewDate(date, {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
@@ -32,15 +33,24 @@ const Cart = () => {
   const [unavailableItems, setUnavailableItems] = useState({})
   const today = new Date().toISOString().split('T')[0]
   const cartCategories = [...new Set(items.map((item) => item.category))]
-  const rentalCostBreakdown = ITEM_CATEGORIES
+  const baseRentalCostBreakdown = ITEM_CATEGORIES
     .filter((category) => cartCategories.includes(category.name))
     .map(({ name, rentalLabel, rentalFee }) => ({ name, label: rentalLabel, fee: rentalFee }))
+  const itemExtraCostBreakdown = items
+    .filter((item) => Number(item.extraRentalFee) > 0)
+    .map((item) => ({
+      name: `extra-${item.itemId}`,
+      label: `${item.code || item.title || 'כלי'} — תוספת ×${item.quantity}`,
+      fee: Number(item.extraRentalFee) * item.quantity,
+      isExtra: true
+    }))
+  const rentalCostBreakdown = [...baseRentalCostBreakdown, ...itemExtraCostBreakdown]
   const unknownCategories = cartCategories.filter(
     (categoryName) => !ITEM_CATEGORIES.some((category) => category.name === categoryName)
   )
   const totalRentalCost = rentalCostBreakdown.reduce((total, category) => total + category.fee, 0)
   const returnDates = eventDate
-    ? rentalCostBreakdown.map((category) => ({
+    ? baseRentalCostBreakdown.map((category) => ({
         ...category,
         date: formatRentalDate(addDaysToDate(eventDate, category.name === 'מפות' ? 3 : 1))
       }))
@@ -212,6 +222,9 @@ const Cart = () => {
               {item.category && <p className='cart-item-category'>{item.category}{item.subcategory && ` > ${item.subcategory}`}</p>}
               {item.size && <p className='cart-item-meta'><strong>גודל:</strong> {item.size}</p>}
               {item.material && <p className='cart-item-meta'><strong>חומר:</strong> {item.material}</p>}
+              {Number(item.extraRentalFee) > 0 && (
+                <p className='cart-item-meta'><strong>תוספת ליחידה:</strong> {Number(item.extraRentalFee)} ש"ח</p>
+              )}
               <label className='cart-quantity-label'>
                 כמות
                 <input
@@ -266,7 +279,7 @@ const Cart = () => {
                 <ul>
                   {rentalCostBreakdown.map((category) => (
                     <li key={category.name}>
-                      <span>{category.label} (ללא הגבלת כמות)</span>
+                      <span>{category.label}{category.isExtra ? '' : ' (ללא הגבלת כמות)'}</span>
                       <strong>{category.fee} ש"ח</strong>
                     </li>
                   ))}

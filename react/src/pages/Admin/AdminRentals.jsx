@@ -2,10 +2,11 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import api, { getUploadUrl } from '../../api/axios'
 import AdminShell from './AdminShell'
+import { formatHebrewDate } from '../../utils/dateLabels'
 
 const labels = { pending: 'ממתינה לאישור', approved: 'אושרה', rejected: 'נדחתה', picked_up: 'נאספה', returned: 'הוחזרה', cancelled: 'בוטלה' }
 const actions = { pending: [['approved', 'אשר'], ['rejected', 'דחה']], approved: [['picked_up', 'סמן כנאספה']], picked_up: [['returned', 'סמן כהוחזרה']] }
-const date = (value) => value ? new Date(value).toLocaleDateString('he-IL') : ''
+const date = (value) => formatHebrewDate(value)
 const dateKey = (value) => {
   if (!value) return ''
   const parsedDate = new Date(value)

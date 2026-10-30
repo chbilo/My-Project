@@ -100,6 +100,7 @@ const CartProvider = ({ children }) => {
           variantGroupId: item.variantGroupId || '',
           size: item.size || '',
           material: item.material || '',
+          extraRentalFee: Number(item.extraRentalFee) || 0,
           maxQuantity: item.quantity
         }
       ]

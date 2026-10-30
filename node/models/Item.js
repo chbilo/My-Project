@@ -50,6 +50,11 @@ const itemSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
+  extraRentalFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   isAvailable: {
     type: Boolean,
     default: true

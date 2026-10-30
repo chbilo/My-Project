@@ -369,6 +369,7 @@ const Items = () => {
                     )}
                     {item.size && <p><strong>גודל:</strong> {item.size}</p>}
                     {item.material && <p><strong>חומר:</strong> {item.material}</p>}
+                    {Number(item.extraRentalFee) > 0 && <p><strong>תוספת לכל יחידה:</strong> {item.extraRentalFee} ש״ח</p>}
                     {item.colors && item.colors.length > 0 && (
                       <p><strong>צבעים:</strong> {item.colors.join(', ')}</p>
                     )}

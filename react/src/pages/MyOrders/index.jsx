@@ -9,6 +9,7 @@ import stopIcon from '../../assets/icons/stop.gif'
 import cancelledIcon from '../../assets/icons/invalid (1).gif'
 import addIcon from '../../assets/icons/add.gif'
 import verifiedIcon from '../../assets/icons/verified.gif'
+import { formatHebrewDate } from '../../utils/dateLabels'
 
 const STATUS_LABELS = {
   pending: 'נשלחה לאישור',
@@ -33,7 +34,7 @@ const STATUS_ICONS = {
 
 const formatDate = (value) => {
   if (!value) return ''
-  return new Date(value).toLocaleDateString('he-IL')
+  return formatHebrewDate(value)
 }
 
 const MyOrders = () => {
@@ -105,7 +106,7 @@ const MyOrders = () => {
           <ul>
             {location.state.rentalCostBreakdown.map((category) => (
               <li key={category.name}>
-                <span>{category.label} (ללא הגבלת כמות)</span>
+                <span>{category.label}{category.isExtra ? '' : ' (ללא הגבלת כמות)'}</span>
                 <strong>{category.fee} ש"ח</strong>
               </li>
             ))}

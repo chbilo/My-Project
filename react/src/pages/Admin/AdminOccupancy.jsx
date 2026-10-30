@@ -2,10 +2,11 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import api from '../../api/axios'
 import AdminShell from './AdminShell'
+import { formatHebrewDate } from '../../utils/dateLabels'
 
 const labels = { pending: 'ממתינה לאישור', approved: 'אושרה', picked_up: 'נאספה' }
 const occupyingStatuses = new Set(Object.keys(labels))
-const date = (value) => value ? new Date(value).toLocaleDateString('he-IL') : ''
+const date = (value) => formatHebrewDate(value)
 const dateKey = (value) => {
   if (!value) return ''
   const parsedDate = new Date(value)

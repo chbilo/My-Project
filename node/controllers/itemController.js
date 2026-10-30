@@ -38,6 +38,13 @@ const parseAvailability = (value) => {
   return value === 'true' || value === 'on' || value === '1'
 }
 
+const parseNonNegativeNumber = (value) => {
+  if (value === undefined || value === null || value === '') return 0
+
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0
+}
+
 const parseImageArray = (value) => {
   if (!value) return []
   if (Array.isArray(value)) return value.filter(Boolean)
@@ -47,7 +54,7 @@ const parseImageArray = (value) => {
       const parsed = JSON.parse(value)
       if (Array.isArray(parsed)) return parsed.filter(Boolean)
     } catch (e) {
-      // ignore invalid JSON and fall back to comma splitting
+      // אם הערך אינו JSON תקין, ננסה לפצל לפי פסיקים
     }
 
     return value.split(',').map((entry) => entry.trim()).filter(Boolean)
@@ -58,28 +65,46 @@ const parseImageArray = (value) => {
 
 const createItem = async (req, res) => {
   try {
-    const data = req.body
+    const data = { ...req.body }
+
     if (req.files && req.files.length > 0) {
-      data.images = req.files.map(file => `/uploads/${file.filename}`)
+      data.images = req.files.map((file) => `/uploads/${file.filename}`)
     }
+
     if (data.isAvailable !== undefined) {
       data.isAvailable = parseAvailability(data.isAvailable)
     }
+
+    if (data.extraRentalFee !== undefined) {
+      data.extraRentalFee = parseNonNegativeNumber(data.extraRentalFee)
+    }
+
+    if (data.quantity !== undefined) {
+      data.quantity = parseNonNegativeNumber(data.quantity)
+    }
+
     if (data.colors) {
       try {
         data.colors = JSON.parse(data.colors)
       } catch (e) {
-        data.colors = data.colors.split(',').map(color => color.trim()).filter(color => color)
+        data.colors = data.colors
+          .split(',')
+          .map((color) => color.trim())
+          .filter(Boolean)
       }
     }
+
     if (data.variantGroupId !== undefined) {
       data.variantGroupId = data.variantGroupId.trim()
     }
+
     data.code = await generateItemCode(data.category, data.subcategory)
     data.title = data.code
     data.embeddingText = buildItemSearchText(data)
+
     const newItem = new Item(data)
     const saved = await newItem.save()
+
     res.status(201).json(saved)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -88,9 +113,12 @@ const createItem = async (req, res) => {
 
 const updateItem = async (req, res) => {
   try {
-    const data = req.body
+    const data = { ...req.body }
+
     const existing = await Item.findById(req.params.id)
-    if (!existing) return res.status(404).json({ message: 'Item not found' })
+    if (!existing) {
+      return res.status(404).json({ message: 'Item not found' })
+    }
 
     if (data.code !== undefined) {
       data.code = data.code.trim()
@@ -99,21 +127,32 @@ const updateItem = async (req, res) => {
 
     const removeImages = parseImageArray(data.removeImages)
     const orderedImages = parseImageArray(data.imageOrder)
+
     delete data.removeImages
     delete data.imageOrder
 
     const currentImages = Array.isArray(existing.images) ? existing.images : []
-    const remainingImages = currentImages.filter((image) => !removeImages.includes(image))
+    const remainingImages = currentImages.filter(
+      (image) => !removeImages.includes(image)
+    )
+
     const orderedRemainingImages = orderedImages.length > 0
       ? orderedImages.filter((image) => remainingImages.includes(image))
       : remainingImages
 
     if (req.files && req.files.length > 0) {
-      const uploadedImages = req.files.map((file) => `/uploads/${file.filename}`)
-      const mergedImages = [...orderedRemainingImages, ...uploadedImages.filter((image) => !orderedRemainingImages.includes(image))]
-      if (removeImages.length > 0 || orderedImages.length > 0 || uploadedImages.length > 0) {
-        data.images = mergedImages
-      }
+      const uploadedImages = req.files.map(
+        (file) => `/uploads/${file.filename}`
+      )
+
+      const mergedImages = [
+        ...orderedRemainingImages,
+        ...uploadedImages.filter(
+          (image) => !orderedRemainingImages.includes(image)
+        )
+      ]
+
+      data.images = mergedImages
     } else if (removeImages.length > 0 || orderedImages.length > 0) {
       data.images = orderedRemainingImages
     }
@@ -121,22 +160,47 @@ const updateItem = async (req, res) => {
     if (data.isAvailable !== undefined) {
       data.isAvailable = parseAvailability(data.isAvailable)
     }
+
+    if (data.extraRentalFee !== undefined) {
+      data.extraRentalFee = parseNonNegativeNumber(data.extraRentalFee)
+    }
+
+    if (data.quantity !== undefined) {
+      data.quantity = parseNonNegativeNumber(data.quantity)
+    }
+
     if (data.colors) {
       try {
         data.colors = JSON.parse(data.colors)
       } catch (e) {
-        data.colors = data.colors.split(',').map(color => color.trim()).filter(color => color)
+        data.colors = data.colors
+          .split(',')
+          .map((color) => color.trim())
+          .filter(Boolean)
       }
     }
+
     if (data.variantGroupId !== undefined) {
       data.variantGroupId = data.variantGroupId.trim()
     }
 
     const nextCategory = data.category || existing.category
-    const nextSubcategory = data.subcategory !== undefined ? data.subcategory : existing.subcategory
-    if (!data.code && shouldRegenerateCode(existing, nextCategory, nextSubcategory)) {
-      data.code = await generateItemCode(nextCategory, nextSubcategory, existing._id)
+    const nextSubcategory = data.subcategory !== undefined
+      ? data.subcategory
+      : existing.subcategory
+
+    if (!data.code && shouldRegenerateCode(
+      existing,
+      nextCategory,
+      nextSubcategory
+    )) {
+      data.code = await generateItemCode(
+        nextCategory,
+        nextSubcategory,
+        existing._id
+      )
     }
+
     if (data.code) {
       data.title = data.code
     }
@@ -145,10 +209,21 @@ const updateItem = async (req, res) => {
       ...existing.toObject(),
       ...data
     })
-    const updated = await Item.findByIdAndUpdate(req.params.id, data, { returnDocument: 'after' })
-    if (!updated) return res.status(404).json({ message: 'Item not found' })
+
+    const extraRentalFee = data.extraRentalFee !== undefined
+      ? parseNonNegativeNumber(data.extraRentalFee)
+      : existing.extraRentalFee || 0
+
+    delete data.extraRentalFee
+
+    Object.assign(existing, data)
+    existing.set('extraRentalFee', extraRentalFee)
+
+    const updated = await existing.save()
+
     res.json(updated)
   } catch (err) {
+    console.error('[updateItem error]', err)
     res.status(400).json({ message: err.message })
   }
 }
@@ -159,4 +234,10 @@ const deleteItem = async (req, res) => {
   res.json({ message: 'Item deleted' })
 }
 
-module.exports = { getAllItems, getItemById, createItem, updateItem, deleteItem }
+module.exports = {
+  getAllItems,
+  getItemById,
+  createItem,
+  updateItem,
+  deleteItem
+}

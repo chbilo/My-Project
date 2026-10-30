@@ -82,6 +82,7 @@ const AdminItems = () => {
     data.append('category', form.get('category') || '')
     data.append('subcategory', form.get('subcategory') || '')
     data.append('quantity', form.get('quantity') || '0')
+    data.append('extraRentalFee', form.get('extraRentalFee') || '0')
     data.append('colors', JSON.stringify((form.get('colors') || '').split(',').map((color) => color.trim()).filter(Boolean)))
     data.append('isAvailable', form.get('isAvailable') ? 'true' : 'false')
     if (removedImages.length > 0) {
@@ -162,6 +163,7 @@ const AdminItems = () => {
                   <label>קטגוריה<select name='category' defaultValue={item.category || ''} required>{ITEM_CATEGORIES.map((category) => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></label>
                   <label>תת-קטגוריה<select name='subcategory' defaultValue={item.subcategory || ''}><option value=''>ללא תת-קטגוריה</option>{getSubcategoriesByCategory(item.category).map((subcategory) => <option key={subcategory} value={subcategory}>{subcategory}</option>)}</select></label>
                   <label>כמות<input name='quantity' type='number' min='0' defaultValue={item.quantity ?? 0} /></label>
+                  <label>תוספת מחיר לכל יחידה (ש״ח)<input name='extraRentalFee' type='number' min='0' step='1' defaultValue={item.extraRentalFee ?? 0} /></label>
                   <label>צבעים (מופרדים בפסיק)<input name='colors' type='text' defaultValue={(item.colors || []).join(', ')} /></label>
                   <label className='admin-checkbox'><input name='isAvailable' type='checkbox' defaultChecked={item.isAvailable !== false} /> זמין להשאלה</label>
 

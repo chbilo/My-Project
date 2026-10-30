@@ -19,6 +19,11 @@ const cartItemSchema = new mongoose.Schema({
   variantGroupId: String,
   size: String,
   material: String,
+  extraRentalFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   maxQuantity: {
     type: Number,
     default: 0

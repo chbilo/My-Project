@@ -6,7 +6,8 @@ const buildItemSearchText = (item) => {
         item.description ? `תיאור: ${item.description}` : null,
         item.colors?.length ? `צבעים: ${item.colors.join(', ')}` : null,
         item.material ? `חומר: ${item.material}` : null,
-        item.size ? `גודל: ${item.size}` : null
+        item.size ? `גודל: ${item.size}` : null,
+        item.variantLabel ? `${item.variantType || 'גודל'}: ${item.variantLabel}` : null
     ]
 
     return fields.filter(Boolean).join('. ')

@@ -27,6 +27,8 @@ const AdminNewItem = () => {
   return <AdminShell title='יצירת מוצר חדש' description='הוסף מוצר חדש לקטלוג הפריטים להשאלה.'><section className='admin-create'><form onSubmit={submit} className='admin-form'>
     <label>תיאור<textarea name='description' rows='3' /></label>
     <label>קבוצת מידות<input name='variantGroupId' type='text' placeholder='אותו מזהה לכל מידות אותו מוצר' /></label>
+    <label>שם שדה הבחירה<select name='variantType' defaultValue='גודל'><option value='גודל'>גודל</option><option value='צבע'>צבע</option><option value='סוג'>סוג</option></select></label>
+    <label>תוית גודל<input name='variantLabel' type='text' placeholder='לדוגמה: קטן, בינוני, גדול' /></label>
     <label>גודל<input name='size' type='text' /></label>
     <label>חומר<input name='material' type='text' /></label>
     <label>קטגוריה<select name='category' value={category} onChange={(event) => setCategory(event.target.value)} required><option value=''>בחר קטגוריה</option>{ITEM_CATEGORIES.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}</select></label>

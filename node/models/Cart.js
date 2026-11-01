@@ -18,6 +18,8 @@ const cartItemSchema = new mongoose.Schema({
   subcategory: String,
   variantGroupId: String,
   size: String,
+  variantLabel: String,
+  variantType: String,
   material: String,
   extraRentalFee: {
     type: Number,

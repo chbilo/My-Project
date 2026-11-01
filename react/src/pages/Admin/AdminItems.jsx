@@ -77,6 +77,8 @@ const AdminItems = () => {
     data.append('code', form.get('code') || '')
     data.append('description', form.get('description') || '')
     data.append('variantGroupId', form.get('variantGroupId') || '')
+    data.append('variantType', form.get('variantType') || '')
+    data.append('variantLabel', form.get('variantLabel') || '')
     data.append('size', form.get('size') || '')
     data.append('material', form.get('material') || '')
     data.append('category', form.get('category') || '')
@@ -115,6 +117,7 @@ const AdminItems = () => {
       item.subcategory,
       item.description,
       item.size,
+      item.variantLabel,
       item.material,
       item.colors?.join(' ')
     ].filter(Boolean).join(' ').toLocaleLowerCase('he-IL')
@@ -158,6 +161,8 @@ const AdminItems = () => {
                   <label>קוד מוצר<input name='code' type='text' defaultValue={item.code || ''} required /></label>
                   <label>תיאור<textarea name='description' rows='2' defaultValue={item.description || ''} /></label>
                   <label>קבוצת מידות<input name='variantGroupId' type='text' defaultValue={item.variantGroupId || ''} /></label>
+                  <label>שם שדה הבחירה<select name='variantType' defaultValue={item.variantType || 'גודל'}><option value='גודל'>גודל</option><option value='צבע'>צבע</option><option value='סוג'>סוג</option></select></label>
+                  <label>תוית גודל<input name='variantLabel' type='text' defaultValue={item.variantLabel || ''} placeholder='לדוגמה: קטן, בינוני, גדול' /></label>
                   <label>גודל<input name='size' type='text' defaultValue={item.size || ''} /></label>
                   <label>חומר<input name='material' type='text' defaultValue={item.material || ''} /></label>
                   <label>קטגוריה<select name='category' defaultValue={item.category || ''} required>{ITEM_CATEGORIES.map((category) => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></label>

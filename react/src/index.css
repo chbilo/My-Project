@@ -2010,13 +2010,178 @@ body.gallery-lightbox-open .chat-widget {
 
 .date-picker {
   width: 100%;
-  max-width: 360px;
+  max-width: 400px;
   margin-inline: auto;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.date-picker .rdp-root,
+.date-picker .rdp-weekday,
+.date-picker .rdp-month_grid,
+.date-picker .rdp-month_grid thead,
+.date-picker .rdp-month_grid tbody,
+.date-picker .rdp-weekdays,
+.date-picker .rdp-week {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.date-picker .rdp-root {
+  --rdp-accent-color: var(--teal);
+  --rdp-day-width: calc(100% / 7);
+  --rdp-day-height: 86px;
+  --rdp-day_button-width: 100%;
+  --rdp-day_button-height: 86px;
+  --rdp-day_button-border-radius: 6px;
+  --rdp-nav_button-width: 36px;
+  --rdp-nav_button-height: 36px;
+  --rdp-nav-height: 42px;
+  width: 100%;
+  unicode-bidi: isolate;
+}
+
+.date-picker .rdp-months,
+.date-picker .rdp-month,
+.date-picker .rdp-month_grid {
+  width: 100%;
+}
+
+.date-picker .rdp-month_grid {
+  table-layout: fixed;
+}
+
+.date-picker .rdp-month_caption {
+  height: 36px;
+  margin-bottom: 10px;
+  margin-inline: 36px;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.date-picker .rdp-caption_label {
+  width: fit-content;
+  margin-inline: auto;
+  overflow: visible;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.date-picker .rdp-button_previous,
+.date-picker .rdp-button_next {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff0f5;
+  color: var(--teal);
+}
+
+.date-picker .rdp-chevron {
+  fill: currentColor;
+  width: 12px;
+  height: 12px;
+}
+
+.date-picker .rdp-weekday {
+  height: 29px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 13px;
+  opacity: 1;
+}
+
+.date-picker .rdp-day {
+  height: 68px;
+  padding: 0 2px 5px;
+}
+
+.date-picker .rdp-day_button {
+  border: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-picker .hebrew-date-button {
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
+.date-picker .calendar-holiday {
+  max-width: 44px;
+  overflow: hidden;
+  font-size: 6.5px;
+  line-height: 1.05;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-picker .hebrew-day-number {
+  font-size: 14px;
+}
+
+.date-picker .gregorian-day-number {
+  font-size: 9px;
+  direction: ltr;
+  opacity: .72;
+}
+
+.date-picker .shabbat-parsha {
+  max-width: 42px;
+  overflow: hidden;
+  font-size: 7px;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-picker .rdp-day_button:hover:not(:disabled),
+.date-picker .rdp-selected .rdp-day_button {
+  background: var(--teal);
+  color: #fff;
+}
+
+.date-picker .rdp-disabled:not(.rdp-selected) .rdp-day_button {
+  background: #edf0ef;
+  color: var(--muted);
+  opacity: .65;
+}
+
+.date-picker .rdp-today:not(.rdp-selected) .rdp-day_button {
+  color: var(--teal);
+}
+
+.date-picker footer {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  min-height: 20px;
+  text-align: right;
+}
+
+.date-picker .date-picker-value {
+  display: block;
+  margin: 0;
+  text-align: right;
+}
+
+.date-picker .rdp-month_caption {
+  direction: rtl;
+}
+
+.date-picker .rdp-month_caption,
+.date-picker .rdp-caption_label {
+  pointer-events: none;
 }
 
 .date-picker-header,

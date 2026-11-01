@@ -99,6 +99,8 @@ const CartProvider = ({ children }) => {
           subcategory: item.subcategory || '',
           variantGroupId: item.variantGroupId || '',
           size: item.size || '',
+          variantLabel: item.variantLabel || '',
+          variantType: item.variantType || 'גודל',
           material: item.material || '',
           extraRentalFee: Number(item.extraRentalFee) || 0,
           maxQuantity: item.quantity

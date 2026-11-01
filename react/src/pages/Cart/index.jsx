@@ -6,7 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext'
 import DatePicker from '../../components/DatePicker'
 import addIcon from '../../assets/icons/add.gif'
 import { ITEM_CATEGORIES } from '../../constants/itemCategories'
-import { formatHebrewDate } from '../../utils/dateLabels'
+import { formatHebrewCalendarDate } from '../../utils/dateLabels'
 
 const addDaysToDate = (date, days) => {
   const result = new Date(`${date}T00:00:00`)
@@ -14,11 +14,8 @@ const addDaysToDate = (date, days) => {
   return result
 }
 
-const formatRentalDate = (date) => formatHebrewDate(date, {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric'
+const formatRentalDate = (date) => formatHebrewCalendarDate(date, {
+  includeWeekday: true,
 })
 
 const Cart = () => {

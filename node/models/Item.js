@@ -24,6 +24,15 @@ const itemSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  variantLabel: {
+    type: String,
+    trim: true
+  },
+  variantType: {
+    type: String,
+    trim: true,
+    default: 'גודל'
+  },
   material: {
     type: String,
     trim: true

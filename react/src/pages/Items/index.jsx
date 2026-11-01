@@ -353,8 +353,8 @@ const Items = () => {
                   }
                   <div className='item-card-content'>
                     {group.items.length > 1 && (
-                      <div className='item-variant-options' aria-label='בחירת גודל'>
-                        <strong>גודל:</strong>
+                      <div className='item-variant-options' aria-label={`בחירת ${group.items[0].variantType || 'גודל'}`}>
+                        <strong>{group.items[0].variantType || 'גודל'}:</strong>
                         {group.items.map((variant) => (
                           <button
                             key={variant._id}
@@ -362,7 +362,7 @@ const Items = () => {
                             className={`item-variant-option${variant._id === item._id ? ' selected' : ''}`}
                             onClick={() => setSelectedVariantIds((prev) => ({ ...prev, [group.id]: variant._id }))}
                           >
-                            {variant.size || 'ללא מידה'}
+                            {variant.variantLabel || variant.size || 'ללא מידה'}
                           </button>
                         ))}
                       </div>

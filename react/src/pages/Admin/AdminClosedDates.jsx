@@ -2,14 +2,22 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import api from '../../api/axios'
 import AdminShell from './AdminShell'
+import DatePicker from '../../components/DatePicker'
 
 const formatDate = (value) => new Date(value).toLocaleDateString('he-IL')
+const formatInputDate = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 const AdminClosedDates = () => {
   const { user } = useContext(AuthContext)
   const [dates, setDates] = useState([])
   const [listLoading, setListLoading] = useState(true)
   const [state, setState] = useState({ loading: false, error: '', success: '' })
+  const [selectedDate, setSelectedDate] = useState('')
 
   const load = async () => {
     setListLoading(true)
@@ -34,6 +42,7 @@ const AdminClosedDates = () => {
     try {
       await api.post('closed-dates', Object.fromEntries(new FormData(event.target).entries()))
       event.target.reset()
+      setSelectedDate('')
       await load()
       setState({ loading: false, error: '', success: 'היום נסגר להזמנות' })
     } catch (error) {
@@ -54,7 +63,10 @@ const AdminClosedDates = () => {
     <AdminShell title='ימים סגורים להזמנות' description='סגור ימים שבהם לא ניתן לבצע הזמנות חדשות.'>
       <section className='admin-create'>
         <form onSubmit={submit} className='admin-form'>
-          <label>תאריך לסגירה<input name='date' type='date' min={new Date().toISOString().split('T')[0]} required /></label>
+          <label>תאריך לסגירה
+            <input type='hidden' name='date' value={selectedDate} required />
+            <DatePicker value={selectedDate} min={formatInputDate(new Date())} onChange={setSelectedDate} />
+          </label>
           <button type='submit' disabled={state.loading}>{state.loading ? 'שומר...' : 'סגור יום להזמנות'}</button>
           {state.error && <p className='error-message'>{state.error}</p>}
           {state.success && <p className='success-message'>{state.success}</p>}

@@ -87,6 +87,14 @@
   transform: translateY(-1px);
 }
 
+.date-picker-compact .date-picker-grid button.calendar-day {
+  height: 42px;
+  min-height: 42px;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 3px;
+}
+
 .date-picker-grid .hebrew-day-number {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 17px;
@@ -175,6 +183,12 @@
     height: 62px;
     min-height: 62px;
     padding-inline: 2px;
+  }
+
+  .date-picker-compact .date-picker-grid button.calendar-day {
+    height: 38px;
+    min-height: 38px;
+    padding-block: 3px;
   }
 
   .date-picker-grid .hebrew-day-number {

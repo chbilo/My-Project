@@ -35,6 +35,21 @@ const getCart = async (req, res) => {
 const updateCart = async (req, res) => {
   const userId = req.user._id
   const items = Array.isArray(req.body.items) ? req.body.items : []
+  const itemIds = items.map((entry) => entry.itemId)
+  const currentItems = await Item.find({ _id: { $in: itemIds } })
+  const currentItemsById = new Map(currentItems.map((item) => [item._id.toString(), item]))
+  const chairCoverQuantity = items.reduce((total, entry) => {
+    const item = currentItemsById.get(entry.itemId.toString())
+    return item?.category === 'מפות' && item?.subcategory === 'כיסויים לכסאות'
+      ? total + Number(entry.quantity || 0)
+      : total
+  }, 0)
+
+  if (chairCoverQuantity > 60) {
+    return res.status(400).json({
+      message: 'ניתן להזמין עד 60 כיסויים לכסאות בהזמנה אחת.'
+    })
+  }
 
   const cart = await Cart.findOneAndUpdate(
     { user: userId },

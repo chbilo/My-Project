@@ -5,7 +5,10 @@ export const ITEM_CATEGORIES = [
     rentalLabel: 'מפות וכיסויים',
     rentalFee: 20,
     prefix: 'MP',
-    subcategories: []
+    subcategories: [
+      { name: 'מפות', prefix: 'MP' },
+      { name: 'כיסויים לכסאות', prefix: 'KC' }
+    ]
   },
   {
     slug: 'table-centers',

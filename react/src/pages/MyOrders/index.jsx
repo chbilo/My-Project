@@ -37,6 +37,12 @@ const formatDate = (value) => {
   return formatHebrewDate(value)
 }
 
+const addDaysToDate = (date, days) => {
+  const result = new Date(`${date}T12:00:00`)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
 const MyOrders = () => {
   const { user } = useContext(AuthContext)
   const location = useLocation()
@@ -95,10 +101,37 @@ const MyOrders = () => {
       <h1>ההזמנות שלי</h1>
       {loading && <p>טוען הזמנות...</p>}
       {location.state?.successMessage && (
-        <p className='success-message'>
-          {location.state.successMessage}{' '}
-          <a href='tel:0527140236'>052-7140236</a>
-        </p>
+        <section className='order-success-message' aria-label='פרטי אישור ההזמנה וליווי לקיחה והחזרה'>
+          <h2>ההזמנה נשלחה בהצלחה</h2>
+          <p>
+            ההזמנה ממתינה לאישור. כדי לאשר אותה, יש להתקשר למספר{' '}
+            <a href='tel:0527140236'>052-7140236</a>.
+          </p>
+          <div className='order-success-details'>
+            <section>
+              <h3>לקיחה</h3>
+              <p>
+                האיסוף מתואם ליום לפני האירוע, לאחר 19:30, ברחוב עוזיאל 101, בית כנסת אהל תורה
+                {location.state.eventDate && (
+                  <> (יום האיסוף: {formatDate(addDaysToDate(location.state.eventDate, -1))}).</>
+                )}
+              </p>
+              <p>
+                במועד האיסוף יש להביא צ׳ק פיקדון ומזומן בסך{' '}
+                <strong>{location.state.totalRentalCost} ש"ח</strong> לתשלום עבור ההשאלה.
+              </p>
+              <p>יש להגיע בשעה שתואמה מראש ולתאם בין 9:00 ל-12:00.</p>
+            </section>
+            <section>
+              <h3>החזרה</h3>
+              <p>כלים שלא נכללים במפות מוחזרים למחרת האירוע.</p>
+              <p>מפות מוחזרות כעבור שלושה ימים מהאירוע.</p>
+              <p>ההחזרה מתבצעת לאחר 19:30 בתיאום בין 9:00 ל-12:00.</p>
+              <p>כלים יש להחזיר נקיים ויבשים, אחרי שטיפה במים ובסבון, בקופסה שבה נמסרו.</p>
+              <p>מפות יש להחזיר לאחר כביסה וייבוש, ללא שימוש במייבש.</p>
+            </section>
+          </div>
+        </section>
       )}
       {location.state?.rentalCostBreakdown?.length > 0 && (
         <section className='order-cost-summary' aria-label='חישוב עלות ההזמנה'>

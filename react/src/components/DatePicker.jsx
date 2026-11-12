@@ -166,7 +166,7 @@ const getMonthData = (monthDate) => {
   }
 }
 
-const DatePicker = ({ value, onChange, min }) => {
+const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
   const initialDate = value ? fromKey(value) : new Date()
   const [visibleMonth, setVisibleMonth] = useState(() =>
     getMonthStart(initialDate)
@@ -214,8 +214,8 @@ const DatePicker = ({ value, onChange, min }) => {
   const footerText = selectedDate && selectedDetails
     ? [
         renderPlainGematria(toHDate(selectedDate)),
-        ...selectedDetails.holidays,
-        selectedDetails.parsha,
+        ...(showCalendarDetails ? selectedDetails.holidays : []),
+        ...(showCalendarDetails ? [selectedDetails.parsha] : []),
       ]
         .filter(Boolean)
         .join(' | ')
@@ -241,7 +241,10 @@ const DatePicker = ({ value, onChange, min }) => {
   }
 
   return (
-    <div className="date-picker" dir="rtl">
+    <div
+      className={`date-picker${showCalendarDetails ? '' : ' date-picker-compact'}`}
+      dir="rtl"
+    >
       <div className="date-picker-header">
         <button
           type="button"
@@ -303,7 +306,7 @@ const DatePicker = ({ value, onChange, min }) => {
                 {date.getDate()}
               </span>
 
-              {holidays.map((holiday, holidayIndex) => (
+              {showCalendarDetails && holidays.map((holiday, holidayIndex) => (
                 <span
                   key={`${dateKey}-holiday-${holidayIndex}`}
                   className="calendar-holiday"
@@ -313,7 +316,7 @@ const DatePicker = ({ value, onChange, min }) => {
                 </span>
               ))}
 
-              {parsha && (
+              {showCalendarDetails && parsha && (
                 <span className="shabbat-parsha">
                   {parsha.replace(/^פרשת\s*/, '')}
                 </span>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import api, { getUploadUrl } from '../../api/axios'
 
+const isVideo = (inspiration) => inspiration.mediaType === 'video'
+
 const Gallery = () => {
   const [inspirations, setInspirations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -90,10 +92,10 @@ const Gallery = () => {
           </button>
         </div>
         {showSubmissionForm && <form onSubmit={submitInspiration} className='admin-form'>
-          <label>כותרת<input name='title' type='text' /></label>
-          <label>תיאור<textarea name='description' rows='2' /></label>
-          <label>קטגוריה<input name='category' type='text' /></label>
-          <label>תמונה<input name='image' type='file' accept='image/jpeg,image/png,image/gif,image/webp' required /></label>
+          <label>כותרת <span className='field-optional'>(לא חובה)</span><input name='title' type='text' /></label>
+          <label>תיאור <span className='field-optional'>(לא חובה)</span><textarea name='description' rows='2' /></label>
+          <label>קטגוריה <span className='field-optional'>(לא חובה)</span><input name='category' type='text' /></label>
+          <label>תמונה או וידאו<input name='image' type='file' accept='image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime' required /></label>
           <button type='submit' disabled={submitting}>{submitting ? 'שולח...' : 'שליחת תמונה לאישור'}</button>
           {success && <p className='success-message'>{success}</p>}
         </form>}
@@ -111,7 +113,12 @@ const Gallery = () => {
               onClick={() => setActiveImageIndex(index)}
               aria-label={`פתיחת ${inspiration.title || 'תמונת השראה'} במסך מלא`}
             >
-              <img src={getUploadUrl(inspiration.image)} alt={inspiration.title || 'תמונת השראה'} />
+              {isVideo(inspiration) ? (
+                <video src={getUploadUrl(inspiration.image)} muted playsInline preload='metadata' />
+              ) : (
+                <img src={getUploadUrl(inspiration.image)} alt={inspiration.title || 'תמונת השראה'} />
+              )}
+              {isVideo(inspiration) && <span className='gallery-video-badge'>וידאו</span>}
             </button>
             {(inspiration.title || inspiration.description || inspiration.category) && (
               <figcaption>
@@ -131,14 +138,18 @@ const Gallery = () => {
           </button>
           <figure className='gallery-lightbox-content' onClick={(event) => event.stopPropagation()}>
             <div className='gallery-lightbox-image'>
-              <img src={getUploadUrl(inspirations[activeImageIndex].image)} alt={inspirations[activeImageIndex].title || 'תמונת השראה'} />
+              {isVideo(inspirations[activeImageIndex]) ? (
+                <video src={getUploadUrl(inspirations[activeImageIndex].image)} controls autoPlay playsInline />
+              ) : (
+                <img src={getUploadUrl(inspirations[activeImageIndex].image)} alt={inspirations[activeImageIndex].title || 'תמונת השראה'} />
+              )}
               <button
                 type='button'
                 className='gallery-lightbox-arrow gallery-lightbox-prev'
                 onClick={(event) => { event.stopPropagation(); setActiveImageIndex((current) => (current - 1 + inspirations.length) % inspirations.length) }}
                 aria-label='תמונה קודמת'
               >
-                <svg viewBox='0 0 24 24' aria-hidden='true'><path d='m9 5 7 7-7 7' /></svg>
+                <svg viewBox='0 0 24 24' aria-hidden='true'><path d='m15 5-7 7 7 7' /></svg>
               </button>
               <button
                 type='button'
@@ -146,7 +157,7 @@ const Gallery = () => {
                 onClick={(event) => { event.stopPropagation(); setActiveImageIndex((current) => (current + 1) % inspirations.length) }}
                 aria-label='תמונה הבאה'
               >
-                <svg viewBox='0 0 24 24' aria-hidden='true'><path d='m15 5-7 7 7 7' /></svg>
+                <svg viewBox='0 0 24 24' aria-hidden='true'><path d='m9 5 7 7-7 7' /></svg>
               </button>
             </div>
             {(inspirations[activeImageIndex].title || inspirations[activeImageIndex].description) && (

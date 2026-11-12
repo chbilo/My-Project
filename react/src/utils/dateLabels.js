@@ -1,3 +1,5 @@
+import { HDate } from '@hebcal/core'
+
 const useHebrewWeekendLabel = (formattedDate) =>
   formattedDate.replace(/יום שבת/g, 'מוצאי שבת')
 
@@ -16,7 +18,9 @@ const formatHebrewCalendarDate = (value, { includeWeekday = false } = {}) => {
   const date = value instanceof Date ? value : new Date(`${value}T12:00:00`)
   if (Number.isNaN(date.getTime())) return ''
   const weekday = includeWeekday
-    ? date.toLocaleDateString('he-IL', { weekday: 'long' })
+    ? useHebrewWeekendLabel(
+        date.toLocaleDateString('he-IL', { weekday: 'long' })
+      )
     : ''
   const hdate = new HDate(date)
   const gematria = hdate.renderGematriya()
@@ -28,4 +32,3 @@ const formatHebrewCalendarDate = (value, { includeWeekday = false } = {}) => {
 }
 
 export { formatHebrewDate, formatHebrewCalendarDate }
-import { HDate } from '@hebcal/core'

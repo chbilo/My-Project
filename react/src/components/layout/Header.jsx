@@ -87,90 +87,92 @@ const Header = () => {
 
     return (
         <header className='site-header'>
-            <nav className='site-nav'>
+            <div className='site-header-content'>
                 <NavLink to='/' className='site-brand' aria-label='גמח כלים בית וגן'>
                     <span className='site-brand-mark'>ג</span>
                     <span>גמח כלים בית וגן</span>
                 </NavLink>
-                <NavLink to='/'><HomeMenuIcon />בית</NavLink>
+                <nav className='site-nav'>
+                    <NavLink to='/'><HomeMenuIcon />בית</NavLink>
 
-                <div className='nav-dropdown' ref={productsDropdownRef}>
-                    <button
-                        type='button'
-                        className='nav-dropdown-trigger'
-                        onClick={toggleProductsMenu}
-                        aria-expanded={productsOpen}
-                        aria-label='פתיחת קטגוריות מוצרים'
-                    >
-                        <ProductsMenuIcon />
-                        <span className='nav-dropdown-label'>מוצרים</span>
-                        <span className='nav-dropdown-arrow' aria-hidden='true'>{productsOpen ? '▲' : '▼'}</span>
-                    </button>
-                    {productsOpen && (
-                        <div className='nav-dropdown-menu'>
-                            {ITEM_CATEGORIES.map((category) => {
-                                const categoryIcon = categoryIcons[category.slug]
-                                return (
-                                    <NavLink
-                                        key={category.slug}
-                                        to={`/items/${category.slug}`}
-                                        className={`nav-dropdown-link${categoryIcon ? ' category-with-icon' : ''}`}
-                                        onClick={() => setProductsOpen(false)}
-                                    >
-                                        {categoryIcon && <img className='category-menu-icon' src={categoryIcon} alt='' />}
-                                        {category.name}
-                                    </NavLink>
-                                )
-                            })}
-                        </div>
-                    )}
-                </div>
-
-                <NavLink to='/contact'><ContactMenuIcon />צור קשר</NavLink>
-                <NavLink to='/gallery'><GalleryMenuIcon />גלריה</NavLink>
-                <NavLink to='/how-it-works'><HowItWorksMenuIcon />איך זה עובד</NavLink>
-                {user ? (
-                    <div className='nav-dropdown' ref={profileDropdownRef}>
+                    <div className='nav-dropdown' ref={productsDropdownRef}>
                         <button
                             type='button'
                             className='nav-dropdown-trigger'
-                            onClick={toggleProfileMenu}
-                            aria-expanded={profileOpen}
-                            aria-label='פתיחת תפריט פרופיל'
+                            onClick={toggleProductsMenu}
+                            aria-expanded={productsOpen}
+                            aria-label='פתיחת קטגוריות מוצרים'
                         >
-                            <span className='nav-dropdown-label' title='אזור אישי'>
-                                <UserIcon />
-                                <span className='sr-only'>אזור אישי</span>
-                            </span>
-                            <span className='nav-dropdown-arrow' aria-hidden='true'>{profileOpen ? '▲' : '▼'}</span>
+                            <ProductsMenuIcon />
+                            <span className='nav-dropdown-label'>מוצרים</span>
+                            <span className='nav-dropdown-arrow' aria-hidden='true'>{productsOpen ? '▲' : '▼'}</span>
                         </button>
-                        {profileOpen && (
+                        {productsOpen && (
                             <div className='nav-dropdown-menu'>
-                                <NavLink to='/profile/account' className='nav-dropdown-link nav-dropdown-link-with-icon'>
-                                    <img className='nav-dropdown-link-icon' src={notepadIcon} alt='' />עריכת הפרטים שלי
-                                </NavLink>
-                                <NavLink to='/my-orders' className='nav-dropdown-link nav-dropdown-link-with-icon'>
-                                    <img className='nav-dropdown-link-icon' src={formIcon} alt='' />ההזמנות שלי
-                                </NavLink>
-                                {user.role === 'admin' && (
-                                    <NavLink to='/admin' className='nav-dropdown-link nav-dropdown-link-with-icon'>
-                                        <img className='nav-dropdown-link-icon notebook-menu-icon' src={notebookIcon} alt='' />ניהול
-                                    </NavLink>
-                                )}
-                                <button className='nav-dropdown-link nav-dropdown-link-with-icon nav-dropdown-logout' type='button' onClick={handleLogout}>
-                                    <img className='nav-dropdown-link-icon' src={logoutIcon} alt='' />התנתקות
-                                </button>
+                                {ITEM_CATEGORIES.map((category) => {
+                                    const categoryIcon = categoryIcons[category.slug]
+                                    return (
+                                        <NavLink
+                                            key={category.slug}
+                                            to={`/items/${category.slug}`}
+                                            className={`nav-dropdown-link${categoryIcon ? ' category-with-icon' : ''}`}
+                                            onClick={() => setProductsOpen(false)}
+                                        >
+                                            {categoryIcon && <img className='category-menu-icon' src={categoryIcon} alt='' />}
+                                            {category.name}
+                                        </NavLink>
+                                    )
+                                })}
                             </div>
                         )}
                     </div>
-                ) : (
-                    <NavLink to='/profile/login'><img className='nav-menu-icon' src={addIcon} alt='' />התחברות</NavLink>
-                )}
-                <NavLink to='/cart' className={`cart-nav-link${cartBump ? ' cart-bump' : ''}`} aria-label={`עגלה${totalItems > 0 ? `, ${totalItems} פריטים` : ''}`}>
-                    <img className='nav-icon cart-image-icon' src={shoppingCartIcon} alt='' />
-                    {totalItems > 0 && <span className='cart-count'>{totalItems}</span>}
-                </NavLink>
-            </nav>
+
+                    <NavLink to='/contact'><ContactMenuIcon />צור קשר</NavLink>
+                    <NavLink to='/gallery'><GalleryMenuIcon />גלריה</NavLink>
+                    <NavLink to='/how-it-works'><HowItWorksMenuIcon />איך זה עובד</NavLink>
+                    {user ? (
+                        <div className='nav-dropdown' ref={profileDropdownRef}>
+                            <button
+                                type='button'
+                                className='nav-dropdown-trigger'
+                                onClick={toggleProfileMenu}
+                                aria-expanded={profileOpen}
+                                aria-label='פתיחת תפריט פרופיל'
+                            >
+                                <span className='nav-dropdown-label' title='אזור אישי'>
+                                    <UserIcon />
+                                    <span className='sr-only'>אזור אישי</span>
+                                </span>
+                                <span className='nav-dropdown-arrow' aria-hidden='true'>{profileOpen ? '▲' : '▼'}</span>
+                            </button>
+                            {profileOpen && (
+                                <div className='nav-dropdown-menu'>
+                                    <NavLink to='/profile/account' className='nav-dropdown-link nav-dropdown-link-with-icon'>
+                                        <img className='nav-dropdown-link-icon' src={notepadIcon} alt='' />עריכת הפרטים שלי
+                                    </NavLink>
+                                    <NavLink to='/my-orders' className='nav-dropdown-link nav-dropdown-link-with-icon'>
+                                        <img className='nav-dropdown-link-icon' src={formIcon} alt='' />ההזמנות שלי
+                                    </NavLink>
+                                    {user.role === 'admin' && (
+                                        <NavLink to='/admin' className='nav-dropdown-link nav-dropdown-link-with-icon'>
+                                            <img className='nav-dropdown-link-icon notebook-menu-icon' src={notebookIcon} alt='' />ניהול
+                                        </NavLink>
+                                    )}
+                                    <button className='nav-dropdown-link nav-dropdown-link-with-icon nav-dropdown-logout' type='button' onClick={handleLogout}>
+                                        <img className='nav-dropdown-link-icon' src={logoutIcon} alt='' />התנתקות
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <NavLink to='/profile/login'><img className='nav-menu-icon' src={addIcon} alt='' />התחברות</NavLink>
+                    )}
+                    <NavLink to='/cart' className={`cart-nav-link${cartBump ? ' cart-bump' : ''}`} aria-label={`עגלה${totalItems > 0 ? `, ${totalItems} פריטים` : ''}`}>
+                        <img className='nav-icon cart-image-icon' src={shoppingCartIcon} alt='' />
+                        {totalItems > 0 && <span className='cart-count'>{totalItems}</span>}
+                    </NavLink>
+                </nav>
+            </div>
         </header>
     )
 }

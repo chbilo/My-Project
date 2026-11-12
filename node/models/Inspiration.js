@@ -6,6 +6,11 @@ const inspirationSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   title: {
     type: String,
     trim: true,
@@ -20,6 +25,10 @@ const inspirationSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: ''
+  },
+  order: {
+    type: Number,
+    default: 0
   },
   isPublished: {
     type: Boolean,

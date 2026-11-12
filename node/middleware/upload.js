@@ -12,20 +12,21 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif|webp/
+  const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|webm|quicktime/
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
   const mimetype = allowedTypes.test(file.mimetype)
 
   if (mimetype && extname) {
     return cb(null, true)
   } else {
-    cb(new Error('פורמט קובץ לא תקין. אנא העלה תמונה'))
+    cb(new Error('פורמט קובץ לא תקין. אנא העלה תמונה או וידאו'))
   }
 }
 
 const upload = multer({
   storage: storage,
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 }
 })
 
 module.exports = upload

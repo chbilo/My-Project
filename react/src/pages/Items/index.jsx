@@ -1,8 +1,6 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import api, { getUploadUrl } from '../../api/axios'
-import { AuthContext } from '../../contexts/AuthContext'
-import { CartContext } from '../../contexts/CartContext'
+import api from '../../api/axios'
 import DatePicker from '../../components/DatePicker'
 import mapsHeadingImage from '../../assets/3.png'
 import centersHeadingImage from '../../assets/2.png'
@@ -10,7 +8,7 @@ import barToolsHeadingImage from '../../assets/1.png'
 import mapsBadge from '../../assets/Pink circular Hebrew badge collection-1.png'
 import centersBadge from '../../assets/Pink floral badge with transparent background-2.png'
 import barToolsBadge from '../../assets/Pink Hebrew vase circle badge-3.png'
-import addIcon from '../../assets/icons/add.gif'
+import ItemCard from './ItemCard'
 import {
   getCategoryBySlug,
   getCategoryPath,
@@ -33,8 +31,6 @@ const categoryCircleImages = {
 const Items = () => {
   const { categorySlug } = useParams()
   const category = getCategoryBySlug(categorySlug)
-  const { user } = useContext(AuthContext)
-  const { addItem } = useContext(CartContext)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -44,10 +40,8 @@ const Items = () => {
   const [availableSubcategories, setAvailableSubcategories] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [eventDateFilter, setEventDateFilter] = useState('')
-  const [currentImageIndex, setCurrentImageIndex] = useState({})
-  const [quantities, setQuantities] = useState({})
-  const [selectedVariantIds, setSelectedVariantIds] = useState({})
-  const [addedItemId, setAddedItemId] = useState(null)
+  const [colorOptionsOpen, setColorOptionsOpen] = useState(false)
+  const [subcategoryOptionsOpen, setSubcategoryOptionsOpen] = useState(false)
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -74,7 +68,6 @@ const Items = () => {
     setSelectedColors([])
     setSelectedSubcategories([])
     setSearchQuery('')
-    setSelectedVariantIds({})
   }, [categorySlug])
 
   useEffect(() => {
@@ -131,20 +124,6 @@ const Items = () => {
     setEventDateFilter('')
   }
 
-  const goToPreviousImage = (itemId, totalImages) => {
-    setCurrentImageIndex((prev) => ({
-      ...prev,
-      [itemId]: prev[itemId] > 0 ? prev[itemId] - 1 : totalImages - 1
-    }))
-  }
-
-  const goToNextImage = (itemId, totalImages) => {
-    setCurrentImageIndex((prev) => ({
-      ...prev,
-      [itemId]: (prev[itemId] || 0) + 1 < totalImages ? (prev[itemId] || 0) + 1 : 0
-    }))
-  }
-
   const itemGroups = Object.values(categoryItems.reduce((groups, item) => {
     const groupId = item.variantGroupId || item._id
     if (!groups[groupId]) groups[groupId] = { id: groupId, items: [] }
@@ -166,41 +145,9 @@ const Items = () => {
   }))
 
   const hasActiveFilters = selectedColors.length > 0 || selectedSubcategories.length > 0 || eventDateFilter || searchQuery
-
-  const getQuantity = (itemId) => quantities[itemId] ?? 1
-
-  const getMaxQuantity = (item) => {
-    if (eventDateFilter && item.availableQuantity != null) {
-      return item.availableQuantity
-    }
-    return item.quantity ?? 0
-  }
-
-  const handleQuantityChange = (itemId, value, maxQuantity) => {
-    const parsed = parseInt(value, 10)
-    if (Number.isNaN(parsed)) return
-
-    setQuantities((prev) => ({
-      ...prev,
-      [itemId]: Math.min(Math.max(1, parsed), maxQuantity)
-    }))
-  }
-
-  const handleAddToCart = (item) => {
-    if (!user) return
-
-    const quantity = getQuantity(item._id)
-    const maxQuantity = getMaxQuantity(item)
-    const itemForCart = eventDateFilter
-      ? { ...item, quantity: maxQuantity }
-      : item
-
-    const added = addItem(itemForCart, quantity)
-    if (!added) return
-
-    setAddedItemId(item._id)
-    setTimeout(() => setAddedItemId(null), 2000)
-  }
+  const hasVisibleChairCovers = filteredGroups.some((group) =>
+    group.items.some((item) => item.category === 'מפות' && item.subcategory === 'כיסויים לכסאות')
+  )
 
   return (
     <main className='items-page'>
@@ -213,6 +160,12 @@ const Items = () => {
           <p className='items-catalog-cost'>
             עלות: {category.rentalLabel} — {category.rentalFee} ש"ח ללא הגבלה
           </p>
+          {categorySlug === 'maps' && (
+            <p className='items-catalog-color-note' role='note'>
+              שימו לב: הצבעים במציאות עשויים להיות לא בדיוק כמו בתמונה.
+              אפשר להגיע ולראות דוגמא לצבע המקורי.
+            </p>
+          )}
         </header>
 
         <aside className='items-filter' aria-label='סינון מוצרים'>
@@ -228,7 +181,7 @@ const Items = () => {
             />
           </label>
 
-          <label className='date-filter-label'>תאריך אירוע<DatePicker value={eventDateFilter} min={today} onChange={setEventDateFilter} /></label>
+          <label className='date-filter-label'>תאריך אירוע<DatePicker value={eventDateFilter} min={today} onChange={setEventDateFilter} showCalendarDetails={false} /></label>
 
           {eventDateFilter && (
             <p className='date-filter-note'>
@@ -238,33 +191,59 @@ const Items = () => {
 
           {availableColors.length > 0 && (
             <div className='color-options'>
-              <h3>צבע</h3>
-              {availableColors.map((color) => (
-                <label key={color} className='color-option'>
-                  <input
-                    type='checkbox'
-                    checked={selectedColors.includes(color)}
-                    onChange={() => handleColorChange(color)}
-                  />
-                  <span>{color}</span>
-                </label>
-              ))}
+              <button
+                type='button'
+                className='filter-section-toggle'
+                aria-expanded={colorOptionsOpen}
+                aria-controls='color-filter-options'
+                onClick={() => setColorOptionsOpen((open) => !open)}
+              >
+                <span>צבע</span>
+                <span className='filter-section-arrow' aria-hidden='true' />
+              </button>
+              {colorOptionsOpen && (
+                <div id='color-filter-options' className='filter-section-options color-filter-options'>
+                  {availableColors.map((color) => (
+                    <label key={color} className='color-option'>
+                      <input
+                        type='checkbox'
+                        checked={selectedColors.includes(color)}
+                        onChange={() => handleColorChange(color)}
+                      />
+                      <span>{color}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {availableSubcategories.length > 0 && (
             <div className='subcategory-options'>
-              <h3>תת-קטגוריות</h3>
-              {availableSubcategories.map((subcategory) => (
-                <label key={subcategory} className='subcategory-option'>
-                  <input
-                    type='checkbox'
-                    checked={selectedSubcategories.includes(subcategory)}
-                    onChange={() => handleSubcategoryChange(subcategory)}
-                  />
-                  <span>{subcategory}</span>
-                </label>
-              ))}
+              <button
+                type='button'
+                className='filter-section-toggle'
+                aria-expanded={subcategoryOptionsOpen}
+                aria-controls='subcategory-filter-options'
+                onClick={() => setSubcategoryOptionsOpen((open) => !open)}
+              >
+                <span>תת-קטגוריות</span>
+                <span className='filter-section-arrow' aria-hidden='true' />
+              </button>
+              {subcategoryOptionsOpen && (
+                <div id='subcategory-filter-options' className='filter-section-options subcategory-filter-options'>
+                  {availableSubcategories.map((subcategory) => (
+                    <label key={subcategory} className='subcategory-option'>
+                      <input
+                        type='checkbox'
+                        checked={selectedSubcategories.includes(subcategory)}
+                        onChange={() => handleSubcategoryChange(subcategory)}
+                      />
+                      <span>{subcategory}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -301,122 +280,20 @@ const Items = () => {
           )}
 
           <section className='items-grid'>
-            {filteredGroups.map((group) => {
-              const selectedItemId = selectedVariantIds[group.id] || group.items[0]._id
-              const item = group.items.find((variant) => variant._id === selectedItemId) || group.items[0]
-              const imageIndex = currentImageIndex[item._id] || 0
-              const currentImage = item.images?.[imageIndex]
-              const totalImages = item.images?.length || 0
-              const maxQuantity = getMaxQuantity(item)
-              const unavailableByDate = !!eventDateFilter && (!item.availableOnDate || (item.availableQuantity ?? 0) <= 0)
-              const unavailable = !item.isAvailable || unavailableByDate
-              const canAddToCart = !!user && !unavailable && maxQuantity > 0
-
-              return (
-                <article key={group.id} className={`item-card${unavailable ? ' item-card-disabled' : ''}`}>
-                  <div className='item-card-header'>
-                    <h2>
-                      <Link to={`/items/${categorySlug}/${item._id}`} className='item-title-link'>
-                        {getItemLabel(item)}
-                      </Link>
-                    </h2>
-                    <p>{item.description || 'אין תיאור'}</p>
-                  </div>
-                  {currentImage && (
-                    <div className='item-card-images'>
-                      <div className='item-image-gallery'>
-                        <img key={`${item._id}-${imageIndex}`} className='item-gallery-image' src={getUploadUrl(currentImage)} alt={getItemLabel(item)} />
-                        {totalImages > 1 && (
-                          <>
-                            <button
-                              className='gallery-arrow gallery-prev'
-                              onClick={() => goToPreviousImage(item._id, totalImages)}
-                              aria-label='תמונה קודמת'
-                            >
-                              ❮
-                            </button>
-                            <button
-                              className='gallery-arrow gallery-next'
-                              onClick={() => goToNextImage(item._id, totalImages)}
-                              aria-label='תמונה הבאה'
-                            >
-                              ❯
-                            </button>
-                            <div className='image-counter'>
-                              {imageIndex + 1} / {totalImages}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )
-                  }
-                  <div className='item-card-content'>
-                    {group.items.length > 1 && (
-                      <div className='item-variant-options' aria-label={`בחירת ${group.items[0].variantType || 'גודל'}`}>
-                        <strong>{group.items[0].variantType || 'גודל'}:</strong>
-                        {group.items.map((variant) => (
-                          <button
-                            key={variant._id}
-                            type='button'
-                            className={`item-variant-option${variant._id === item._id ? ' selected' : ''}`}
-                            onClick={() => setSelectedVariantIds((prev) => ({ ...prev, [group.id]: variant._id }))}
-                          >
-                            {variant.variantLabel || variant.size || 'ללא מידה'}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {item.size && <p><strong>גודל:</strong> {item.size}</p>}
-                    {item.material && <p><strong>חומר:</strong> {item.material}</p>}
-                    {Number(item.extraRentalFee) > 0 && <p><strong>תוספת לכל יחידה:</strong> {item.extraRentalFee} ש״ח</p>}
-                    {item.colors && item.colors.length > 0 && (
-                      <p><strong>צבעים:</strong> {item.colors.join(', ')}</p>
-                    )}
-                    <p><strong>מלאי כללי:</strong> {item.quantity ?? 0}</p>
-                    {eventDateFilter && (
-                      <p><strong>זמין לתאריך:</strong> {item.availableQuantity ?? 0}</p>
-                    )}
-                    <div className='item-card-actions'>
-                      {!user ? (
-                        <Link to='/profile/login' className='cart-link nav-dropdown-link-with-icon'>
-                          <img className='nav-dropdown-link-icon' src={addIcon} alt='' />התחבר כדי להוסיף לעגלה
-                        </Link>
-                      ) : canAddToCart ? (
-                        <>
-                          <label className='item-quantity-label'>
-                            כמות להזמנה
-                            <input
-                              type='number'
-                              min='1'
-                              max={maxQuantity}
-                              value={getQuantity(item._id)}
-                              onChange={(e) => handleQuantityChange(item._id, e.target.value, maxQuantity)}
-                              className='item-quantity-input'
-                            />
-                          </label>
-                          <button
-                            type='button'
-                            className='add-to-cart-btn'
-                            onClick={() => handleAddToCart(item)}
-                          >
-                            הוסף לעגלה
-                          </button>
-                          {addedItemId === item._id && (
-                            <p className='success-message item-added-message'>נוסף לעגלה</p>
-                          )}
-                        </>
-                      ) : (
-                        <p className='item-unavailable'>
-                          {eventDateFilter ? 'לא זמין לתאריך שנבחר' : 'לא זמין להזמנה'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
+            {filteredGroups.map((group) => (
+              <ItemCard
+                key={group.id}
+                product={group}
+                categorySlug={categorySlug}
+                eventDateFilter={eventDateFilter}
+              />
+            ))}
           </section>
+          {hasVisibleChairCovers && (
+            <p className='chair-covers-order-limit' role='note'>
+              ניתן להזמין עד 60 כיסויים בהזמנה אחת
+            </p>
+          )}
         </div>
       </div>
 

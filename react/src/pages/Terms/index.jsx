@@ -12,7 +12,7 @@ const Terms = () => {
             <article className='terms-content'>
                 <section>
                     <h2>1. למי מיועד הגמ"ח?</h2>
-                    <p>הגמ"ח מיועד לתושבי בית וגן בלבד.</p>
+                    <p>הגמ"ח מיועד לתושבי בית וגן והסביבה בלבד.</p>
                 </section>
                 <section>
                     <h2>2. הזמנה ואישור</h2>

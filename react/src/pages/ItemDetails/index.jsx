@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import api, { getUploadUrl } from '../../api/axios'
 import { getCategoryPath, getItemLabel } from '../../constants/itemCategories'
 
+const CHAIR_COVERS_LIMIT = 60
+
 const ItemDetails = () => {
   const { categorySlug, itemId } = useParams()
   const [item, setItem] = useState(null)
@@ -85,7 +87,14 @@ const ItemDetails = () => {
             {item.size && <div><span>גודל</span><strong>{item.size}</strong></div>}
             {item.material && <div><span>חומר</span><strong>{item.material}</strong></div>}
             {item.subcategory && <div><span>קטגוריה</span><strong>{item.subcategory}</strong></div>}
-            <div><span>מלאי</span><strong>{item.quantity ?? 0}</strong></div>
+            <div>
+              <span>מלאי</span>
+              <strong>
+                {item.category === 'מפות' && item.subcategory === 'כיסויים לכסאות'
+                  ? CHAIR_COVERS_LIMIT
+                  : (item.quantity ?? 0)}
+              </strong>
+            </div>
           </div>
           {item.colors?.length > 0 && (
             <div className='item-details-colors'>

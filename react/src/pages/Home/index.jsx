@@ -9,16 +9,16 @@ const Home = () => {
             <section className='home-hero' aria-label='ברוכים הבאים לשמחת יהודית'>
                 <div className='home-hero-copy'>
                     <p className='eyebrow'>השאלה לאירועים עם אופי</p>
-                    <h1>הפרטים הקטנים<br />שעושים את האירוע.</h1>
-                    <p className='home-hero-text'>כלים, מפות ומרכזי שולחן שנבחרו כדי להפוך שולחן יפה לזיכרון שנשאר.</p>
-                    <Link to='/items/maps' className='home-primary-link'>לצפייה בקטלוג</Link>
+                    <h1>הפרטים הקטנים<br />שעושים את האירוע</h1>
+                    <p className='home-hero-text'>כלים, מפות ומרכזי שולחן שנבחרו כדי להפוך שולחן יפה לזיכרון שנשאר</p>
+                    <a href='#home-category-cards' className='home-primary-link'>לצפייה בקטלוג</a>
                 </div>
             </section>
             <section className='home-collections' aria-labelledby='home-collections-title'>
                 <p className='eyebrow'>שמחה מתחילה בפרטים הקטנים</p>
                 <h2 id='home-collections-title'>כל מה שצריך לאירוח מושלם</h2>
                 <p className='home-collections-intro'>מבחר כלים ואביזרים להשאלה, כדי שתוכלו להתמקד במה שבאמת חשוב — בשמחה.</p>
-                <div className='home-badge-links' aria-label='קטגוריות מוצרים'>
+                <div id='home-category-cards' className='home-badge-links' aria-label='קטגוריות מוצרים'>
                     <Link to='/items/maps' className='home-badge-link'>
                         <div className='home-badge-visual'>
                             <img src={mapsBadge} alt='מפות' />
@@ -43,7 +43,7 @@ const Home = () => {
                         </div>
                         <div className='home-badge-copy'>
                             <strong>כלים לבר</strong>
-                            <span>ללחיים, קוקטיילים ומרגוע</span>
+                            <span>לבר מתוקים, קינוחים וחגיגה</span>
                         </div>
                     </Link>
                 </div>

@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { AuthContext } from './AuthContext'
 import api from '../api/axios'
 
+const CHAIR_COVERS_LIMIT = 60
+
+const isChairCover = (item) =>
+  item.category === 'מפות' && item.subcategory === 'כיסויים לכסאות'
+
+const getChairCoverQuantity = (items) =>
+  items.reduce((total, item) => total + (isChairCover(item) ? Number(item.quantity) || 0 : 0), 0)
+
 const CartContext = createContext({
   items: [],
   addItem: () => {},
@@ -73,6 +81,12 @@ const CartProvider = ({ children }) => {
 
     setItems((prev) => {
       const existing = prev.find((entry) => entry.itemId === item._id)
+      const otherChairCoverQuantity = getChairCoverQuantity(
+        prev.filter((entry) => entry.itemId !== item._id)
+      )
+      const chairCoverQuantityLimit = isChairCover(item)
+        ? Math.max(0, CHAIR_COVERS_LIMIT - otherChairCoverQuantity)
+        : quantity
 
       if (existing) {
         return prev.map((entry) =>
@@ -80,12 +94,17 @@ const CartProvider = ({ children }) => {
             ? {
                 ...entry,
                 quantity: entry.maxQuantity > 0
-                  ? Math.min(entry.maxQuantity, entry.quantity + quantity)
-                  : entry.quantity + quantity
+                  ? Math.min(entry.maxQuantity, chairCoverQuantityLimit, entry.quantity + quantity)
+                  : Math.min(chairCoverQuantityLimit, entry.quantity + quantity)
               }
             : entry
         )
       }
+
+      const quantityToAdd = isChairCover(item)
+        ? Math.min(quantity, chairCoverQuantityLimit)
+        : quantity
+      if (quantityToAdd < 1) return prev
 
       return [
         ...prev,
@@ -93,7 +112,7 @@ const CartProvider = ({ children }) => {
           itemId: item._id,
           title: item.code || item.title,
           code: item.code || item.title,
-          quantity,
+          quantity: quantityToAdd,
           image: item.images?.[0] || null,
           category: item.category,
           subcategory: item.subcategory || '',
@@ -121,18 +140,23 @@ const CartProvider = ({ children }) => {
       return
     }
 
-    setItems((prev) =>
-      prev.map((entry) =>
+    setItems((prev) => {
+      const currentItem = prev.find((entry) => entry.itemId === itemId)
+      const chairCoverQuantityLimit = currentItem && isChairCover(currentItem)
+        ? CHAIR_COVERS_LIMIT - getChairCoverQuantity(prev.filter((entry) => entry.itemId !== itemId))
+        : quantity
+
+      return prev.map((entry) =>
         entry.itemId === itemId
           ? {
               ...entry,
               quantity: entry.maxQuantity > 0
-                ? Math.min(quantity, entry.maxQuantity)
-                : quantity
+                ? Math.min(quantity, entry.maxQuantity, chairCoverQuantityLimit)
+                : Math.min(quantity, chairCoverQuantityLimit)
             }
           : entry
       )
-    )
+    })
   }
 
   const clearCart = () => {

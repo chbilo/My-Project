@@ -31,6 +31,7 @@ const createInspiration = async (req, res) => {
 
     const inspiration = await Inspiration.create({
       image: `/uploads/${req.file.filename}`,
+      mediaType: req.file.mimetype.startsWith('video/') ? 'video' : 'image',
       title: req.body.title || '',
       description: req.body.description || '',
       category: req.body.category || '',
@@ -58,7 +59,10 @@ const updateInspiration = async (req, res) => {
       data.isPublished = parsePublished(req.body.isPublished)
     }
 
-    if (req.file) data.image = `/uploads/${req.file.filename}`
+    if (req.file) {
+      data.image = `/uploads/${req.file.filename}`
+      data.mediaType = req.file.mimetype.startsWith('video/') ? 'video' : 'image'
+    }
 
     const updated = await Inspiration.findByIdAndUpdate(req.params.id, data, {
       returnDocument: 'after',

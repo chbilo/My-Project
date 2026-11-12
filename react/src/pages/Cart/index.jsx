@@ -5,7 +5,7 @@ import { CartContext } from '../../contexts/CartContext'
 import { AuthContext } from '../../contexts/AuthContext'
 import DatePicker from '../../components/DatePicker'
 import addIcon from '../../assets/icons/add.gif'
-import { ITEM_CATEGORIES } from '../../constants/itemCategories'
+import { getCategoryPath, ITEM_CATEGORIES } from '../../constants/itemCategories'
 import { formatHebrewCalendarDate } from '../../utils/dateLabels'
 
 const addDaysToDate = (date, days) => {
@@ -17,6 +17,16 @@ const addDaysToDate = (date, days) => {
 const formatRentalDate = (date) => formatHebrewCalendarDate(date, {
   includeWeekday: true,
 })
+
+const CHAIR_COVERS_LIMIT = 60
+const CHAIR_COVERS_STOCK_DISPLAY = 60
+const isChairCover = (item) =>
+  item.category === 'מפות' && item.subcategory === 'כיסויים לכסאות'
+
+const getDisplayedStock = (item, items) => {
+  if (isChairCover(item)) return CHAIR_COVERS_STOCK_DISPLAY
+  return item.maxQuantity
+}
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, totalItems, clearCart, cartLoading } = useContext(CartContext)
@@ -45,6 +55,12 @@ const Cart = () => {
   const unknownCategories = cartCategories.filter(
     (categoryName) => !ITEM_CATEGORIES.some((category) => category.name === categoryName)
   )
+  const chairCoverQuantity = items
+    .filter(isChairCover)
+    .reduce((total, item) => total + Number(item.quantity), 0)
+  const chairCoverTypesCount = new Set(
+    items.filter(isChairCover).map((item) => item.itemId)
+  ).size
   const totalRentalCost = rentalCostBreakdown.reduce((total, category) => total + category.fee, 0)
   const returnDates = eventDate
     ? baseRentalCostBreakdown.map((category) => ({
@@ -93,7 +109,15 @@ const Cart = () => {
     const parsed = parseInt(value, 10)
     if (Number.isNaN(parsed)) return
 
-    const max = maxQuantity > 0 ? maxQuantity : parsed
+    const currentItem = items.find((item) => item.itemId === itemId)
+    const otherChairCoverQuantity = items
+      .filter((item) => item.itemId !== itemId && isChairCover(item))
+      .reduce((total, item) => total + Number(item.quantity), 0)
+    const chairCoverLimit = currentItem && isChairCover(currentItem)
+      ? CHAIR_COVERS_LIMIT - otherChairCoverQuantity
+      : parsed
+    const stockLimit = maxQuantity > 0 ? maxQuantity : parsed
+    const max = Math.min(stockLimit, chairCoverLimit)
     updateQuantity(itemId, Math.min(Math.max(1, parsed), max))
   }
 
@@ -132,6 +156,11 @@ const Cart = () => {
       return
     }
 
+    if (chairCoverQuantity > CHAIR_COVERS_LIMIT) {
+      setError('ניתן להזמין עד 60 כיסויים לכסאות בהזמנה אחת.')
+      return
+    }
+
     setSubmitting(true)
     try {
       const availabilityResponse = await api.get('items', { params: { eventDate } })
@@ -164,7 +193,8 @@ const Cart = () => {
           successMessage: 'ההזמנה נשלחה בהצלחה וממתינה לאישור. כדי לאשר את ההזמנה, יש להתקשר אלינו למספר',
           showInspirationInvite: true,
           rentalCostBreakdown,
-          totalRentalCost
+          totalRentalCost,
+          eventDate
         }
       })
     } catch (err) {
@@ -187,8 +217,18 @@ const Cart = () => {
     return (
       <main className='cart-page'>
         <h1>העגלה שלי</h1>
-        <p className='empty-state'>העגלה ריקה.</p>
-        <Link to='/items/maps' className='cart-link'>לצפייה בפריטים</Link>
+        <section className='empty-cart' aria-labelledby='empty-cart-title'>
+          <p className='empty-cart-icon' aria-hidden='true'>+</p>
+          <h2 id='empty-cart-title'>העגלה ריקה</h2>
+          <p>הוסיפו פריטים לקטגוריה שמתאימה לכם כדי להתחיל הזמנה.</p>
+          <div className='empty-cart-categories'>
+            {ITEM_CATEGORIES.map((category) => (
+              <Link key={category.slug} to={getCategoryPath(category.slug)}>
+                הוסיפו {category.name}
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
     )
   }
@@ -197,6 +237,11 @@ const Cart = () => {
     <main className='cart-page'>
       <h1>העגלה שלי</h1>
       <p className='cart-summary'>{totalItems} פריטים בעגלה</p>
+      {chairCoverTypesCount >= 2 && (
+        <p className='chair-covers-order-limit' role='note'>
+          ניתן להזמין עד 60 כיסויים בהזמנה אחת
+        </p>
+      )}
 
       <ul className='cart-list'>
         {items.map((item) => (
@@ -227,14 +272,14 @@ const Cart = () => {
                 <input
                   type='number'
                   min='1'
-                  max={item.maxQuantity > 0 ? item.maxQuantity : undefined}
+                  max={item.maxQuantity > 0 ? getDisplayedStock(item, items) || undefined : isChairCover(item) ? CHAIR_COVERS_LIMIT : undefined}
                   value={item.quantity}
                   onChange={(e) => handleQuantityChange(item.itemId, e.target.value, item.maxQuantity)}
                   className='cart-quantity-input'
                 />
               </label>
               {item.maxQuantity > 0 && (
-                <p className='cart-item-stock'>מלאי זמין: {item.maxQuantity}</p>
+                <p className='cart-item-stock'>מלאי זמין: {getDisplayedStock(item, items)}</p>
               )}
               <button
                 type='button'

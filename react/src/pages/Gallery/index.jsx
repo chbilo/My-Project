@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import api, { getUploadUrl } from '../../api/axios'
 
@@ -12,6 +12,10 @@ const Gallery = () => {
   const [submitting, setSubmitting] = useState(false)
   const [showSubmissionForm, setShowSubmissionForm] = useState(false)
   const [activeImageIndex, setActiveImageIndex] = useState(null)
+  const lightboxRef = useRef(null)
+  const lightboxCloseRef = useRef(null)
+  const lightboxOpenerRef = useRef(null)
+  const isLightboxOpen = activeImageIndex !== null
 
   useEffect(() => {
     const loadInspirations = async () => {
@@ -29,20 +33,54 @@ const Gallery = () => {
   }, [])
 
   useEffect(() => {
-    if (activeImageIndex === null) return undefined
+    if (!isLightboxOpen) return undefined
 
     const handleKeyDown = (event) => {
-      if (event.key === 'ArrowLeft') setActiveImageIndex((current) => (current - 1 + inspirations.length) % inspirations.length)
-      if (event.key === 'ArrowRight') setActiveImageIndex((current) => (current + 1) % inspirations.length)
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setActiveImageIndex(null)
+        return
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        setActiveImageIndex((current) => (current - 1 + inspirations.length) % inspirations.length)
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        setActiveImageIndex((current) => (current + 1) % inspirations.length)
+      }
+
+      if (event.key === 'Tab') {
+        const focusableElements = Array.from(
+          lightboxRef.current?.querySelectorAll(
+            'button:not([disabled]), video[controls], a[href], [tabindex]:not([tabindex="-1"])'
+          ) || []
+        )
+        const firstElement = focusableElements[0]
+        const lastElement = focusableElements[focusableElements.length - 1]
+
+        if (!firstElement) {
+          event.preventDefault()
+        } else if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
     }
 
     document.body.classList.add('gallery-lightbox-open')
+    lightboxCloseRef.current?.focus()
     document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.body.classList.remove('gallery-lightbox-open')
       document.removeEventListener('keydown', handleKeyDown)
+      lightboxOpenerRef.current?.focus()
     }
-  }, [activeImageIndex, inspirations.length])
+  }, [isLightboxOpen, inspirations.length])
 
   const submitInspiration = async (event) => {
     event.preventDefault()
@@ -63,9 +101,9 @@ const Gallery = () => {
   }
 
   return (
-    <main className='gallery-page'>
+    <main id='main-content' tabIndex={-1} className='gallery-page'>
       <header className='gallery-heading'>
-        <p className='eyebrow'>רעיונות לאירוח</p>
+        <p className='eyebrow'>רעיונות לעיצוב</p>
         <h1>גלריית השראה</h1>
         <p>רגעים, צבעים ושולחנות שיעזרו לכם לדמיין את האירוע הבא שלכם.</p>
       </header>
@@ -75,11 +113,11 @@ const Gallery = () => {
           {Array.from({ length: 6 }, (_, index) => <div key={index} className='gallery-skeleton-card' />)}
         </section>
       )}
-      {error && <p className='error-message'>{error}</p>}
+      {error && <p className='error-message' role='alert'>{error}</p>}
       <section className='admin-create gallery-submit'>
         <div className='gallery-submit-heading'>
           <div>
-            <h2>שתפו תמונת השראה</h2>
+            <h2>שתפו תמונות מהאירוע שלכם</h2>
             <p>התמונה תיבדק על ידי מנהל לפני שתופיע בגלריה.</p>
           </div>
           <button
@@ -97,7 +135,7 @@ const Gallery = () => {
           <label>קטגוריה <span className='field-optional'>(לא חובה)</span><input name='category' type='text' /></label>
           <label>תמונה או וידאו<input name='image' type='file' accept='image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime' required /></label>
           <button type='submit' disabled={submitting}>{submitting ? 'שולח...' : 'שליחת תמונה לאישור'}</button>
-          {success && <p className='success-message'>{success}</p>}
+          {success && <p className='success-message' role='status'>{success}</p>}
         </form>}
       </section>
       {!loading && !error && inspirations.length === 0 && (
@@ -110,7 +148,10 @@ const Gallery = () => {
             <button
               type='button'
               className='gallery-image-button'
-              onClick={() => setActiveImageIndex(index)}
+              onClick={(event) => {
+                lightboxOpenerRef.current = event.currentTarget
+                setActiveImageIndex(index)
+              }}
               aria-label={`פתיחת ${inspiration.title || 'תמונת השראה'} במסך מלא`}
             >
               {isVideo(inspiration) ? (
@@ -132,8 +173,21 @@ const Gallery = () => {
       </section>}
 
       {activeImageIndex !== null && inspirations[activeImageIndex] && (
-        createPortal(<div className='gallery-lightbox' role='dialog' aria-modal='true' aria-label='תצוגת תמונה במסך מלא'>
-          <button type='button' className='gallery-lightbox-close' onClick={() => setActiveImageIndex(null)} aria-label='סגירת התמונה'>
+        createPortal(<div
+          ref={lightboxRef}
+          className='gallery-lightbox'
+          role='dialog'
+          aria-modal='true'
+          aria-label='תצוגת תמונה במסך מלא'
+          tabIndex={-1}
+        >
+          <button
+            ref={lightboxCloseRef}
+            type='button'
+            className='gallery-lightbox-close'
+            onClick={() => setActiveImageIndex(null)}
+            aria-label='סגירת התמונה'
+          >
             <svg viewBox='0 0 24 24' aria-hidden='true'><path d='m7 7 10 10M17 7 7 17' /></svg>
           </button>
           <figure className='gallery-lightbox-content' onClick={(event) => event.stopPropagation()}>

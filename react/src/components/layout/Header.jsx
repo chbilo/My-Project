@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/AuthContext'
 import { CartContext } from '../../contexts/CartContext'
 import { ITEM_CATEGORIES } from '../../constants/itemCategories'
+import bowlOnFootIcon from '../../assets/bowl-on-foot.svg'
 import homeIcon from '../../assets/icons/home.gif'
 import phoneIcon from '../../assets/icons/phone.gif'
 import cameraIcon from '../../assets/icons/photo-camera.gif'
@@ -89,10 +90,10 @@ const Header = () => {
         <header className='site-header'>
             <div className='site-header-content'>
                 <NavLink to='/' className='site-brand' aria-label='גמח כלים בית וגן'>
-                    <span className='site-brand-mark'>ג</span>
-                    <span>גמח כלים בית וגן</span>
+                    <span className='site-brand-mark'><img src={bowlOnFootIcon} alt='' /></span>
+                    <span>גמ"ח כלים בית וגן</span>
                 </NavLink>
-                <nav className='site-nav'>
+                <nav className='site-nav' aria-label='ניווט ראשי'>
                     <NavLink to='/'><HomeMenuIcon />בית</NavLink>
 
                     <div className='nav-dropdown' ref={productsDropdownRef}>

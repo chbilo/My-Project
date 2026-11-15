@@ -1,6 +1,6 @@
 const Contact = () => {
     return (
-        <main className='contact-page'>
+        <main id='main-content' tabIndex={-1} className='contact-page'>
             <section className='contact-intro'>
                 <p className='eyebrow'>אנחנו כאן בשבילכם</p>
                 <h1>בואו נדבר<br />על האירוע שלכם.</h1>

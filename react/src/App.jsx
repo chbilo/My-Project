@@ -25,6 +25,7 @@ import MyOrders from './pages/MyOrders/index'
 import Gallery from './pages/Gallery/index'
 import HowItWorks from './pages/HowItWorks/index'
 import Terms from './pages/Terms/index'
+import AccessibilityStatement from './pages/AccessibilityStatement/index'
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path='chat' element={<Navigate to='/' replace />} />
             <Route path='how-it-works' element={<HowItWorks />} />
             <Route path='terms' element={<Terms />} />
+            <Route path='accessibility' element={<AccessibilityStatement />} />
             <Route path='profile' element={<Profile />}>
               <Route index element={<Navigate to='login' replace />} />
               <Route path='login' element={<Login />} />

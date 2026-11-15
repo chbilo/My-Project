@@ -33,7 +33,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <main className='how-it-works-page'>
+    <main id='main-content' tabIndex={-1} className='how-it-works-page'>
       <section className='how-it-works-intro'>
         <div>
           <p className='eyebrow'>פשוט, ברור, מסודר</p>

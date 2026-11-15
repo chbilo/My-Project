@@ -37,7 +37,7 @@ const Account = () => {
   }
 
   return (
-    <main className='profile-page'>
+    <main id='main-content' tabIndex={-1} className='profile-page'>
       <header className='profile-heading'>
         <div className='profile-avatar' aria-hidden='true'>
           {(user.name || '?').charAt(0)}
@@ -96,8 +96,8 @@ const Account = () => {
             טלפון
             <input name='phone' value={form.phone} onChange={handleChange} />
           </label>
-          {error && <p className='error-message'>{error}</p>}
-          {success && <p className='success-message'>{success}</p>}
+          {error && <p className='error-message' role='alert'>{error}</p>}
+          {success && <p className='success-message' role='status'>{success}</p>}
           <div className='profile-form-actions'>
             <button type='submit' className='profile-primary-button' disabled={loading}>{loading ? 'שומר...' : 'שמור שינויים'}</button>
             <button type='button' className='profile-secondary-button' onClick={() => setEditing(false)}>ביטול</button>

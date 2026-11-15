@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { API_BASE_URL } from '../api/axios'
+import { ITEM_CATEGORIES } from '../constants/itemCategories'
+import AccessibilityWidget from './AccessibilityWidget'
 
 import speechBubbleIcon from '../assets/icons/speech-bubble.gif'
 
@@ -20,6 +23,51 @@ const PersonIcon = () => (
     </svg>
 )
 
+const escapeRegExp = (value) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const renderReplyWithItemLinks = (text, items = []) => {
+    const itemsByCode = new Map(
+        items
+            .filter((item) => typeof item.code === 'string' && item.code)
+            .map((item) => [item.code, item])
+    )
+    const codes = [...itemsByCode.keys()].sort((first, second) =>
+        second.length - first.length
+    )
+
+    if (codes.length === 0) {
+        return text
+    }
+
+    const codePattern = new RegExp(
+        `(${codes.map(escapeRegExp).join('|')})`,
+        'g'
+    )
+
+    return text.split(codePattern).map((part, index) => {
+        const item = itemsByCode.get(part)
+
+        if (!item) {
+            return part
+        }
+
+        const category = ITEM_CATEGORIES.find(
+            (entry) => entry.name === item.category
+        )
+
+        return category ? (
+            <Link
+                key={`${item.id}-${index}`}
+                to={`/items/${category.slug}/${item.id}`}
+                className='chat-item-link'
+            >
+                {part}
+            </Link>
+        ) : part
+    })
+}
+
 const Chat = () => {
     const [message, setMessage] = useState('')
 
@@ -34,6 +82,7 @@ const Chat = () => {
     const [conversationHistory, setConversationHistory] = useState([])
     const [loading, setLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
+    const [accessibilityOpen, setAccessibilityOpen] = useState(false)
 
     const sendMessage = async (generateImage = false) => {
         const messageText = message.trim()
@@ -77,6 +126,9 @@ const Chat = () => {
                     {
                         role: 'model',
                         text: replyText,
+                        recommendedItems: Array.isArray(data.recommendedItems)
+                            ? data.recommendedItems
+                            : [],
                         image: data.image || null,
                         imageError: data.imageError || null
                     }
@@ -105,6 +157,15 @@ const Chat = () => {
 
     return (
         <div className='chat-widget'>
+            <AccessibilityWidget
+                isOpen={accessibilityOpen}
+                onToggle={() => {
+                    setIsOpen(false)
+                    setAccessibilityOpen((open) => !open)
+                }}
+                onClose={() => setAccessibilityOpen(false)}
+            />
+
             {isOpen && (
                 <section className='chat-shell' aria-label='יועץ עיצוב שולחנות'>
                     <div className='chat-header'>
@@ -125,7 +186,13 @@ const Chat = () => {
                         </button>
                     </div>
 
-                    <div className='chat-messages'>
+                    <div
+                        className='chat-messages'
+                        role='log'
+                        aria-label='הודעות הצ׳אט'
+                        aria-live='polite'
+                        aria-relevant='additions'
+                    >
                         {chatHistory.map((msg, index) => (
                             <div
                                 key={index}
@@ -154,7 +221,12 @@ const Chat = () => {
                                             </span>
 
                                             <div>
-                                                <span>{msg.text}</span>
+                                                <span>
+                                                    {renderReplyWithItemLinks(
+                                                        msg.text,
+                                                        msg.recommendedItems
+                                                    )}
+                                                </span>
 
                                                 {msg.image && (
                                                     <img
@@ -260,7 +332,10 @@ const Chat = () => {
             <button
                 type='button'
                 className='chat-launcher'
-                onClick={() => setIsOpen((open) => !open)}
+                onClick={() => {
+                    setAccessibilityOpen(false)
+                    setIsOpen((open) => !open)
+                }}
                 aria-label={isOpen ? 'סגירת הצ׳אט' : 'פתיחת הצ׳אט'}
                 aria-expanded={isOpen}
             >

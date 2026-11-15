@@ -53,7 +53,7 @@ const AdminHome = () => {
   }, [user])
 
   if (!user || user.role !== 'admin') {
-    return <main className='admin-page'><h1>אין גישה</h1><p>עבור דף זה דרוש משתמש מנהל.</p></main>
+    return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1><p>עבור דף זה דרוש משתמש מנהל.</p></main>
   }
 
   return (
@@ -66,7 +66,7 @@ const AdminHome = () => {
         {summaryLoading ? (
           <p className='admin-state is-loading' role='status'>טוען נתוני אתר...</p>
         ) : summaryError ? (
-          <p className='error-message'>{summaryError}</p>
+          <p className='error-message' role='alert'>{summaryError}</p>
         ) : (
           <>
             <Link to='/admin/users' className='admin-metric-card'>

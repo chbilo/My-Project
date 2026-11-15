@@ -10,7 +10,7 @@ const AdminNewItem = () => {
   const [state, setState] = useState({ loading: false, error: '', success: '' })
   const subcategories = getSubcategoriesByCategory(category)
 
-  if (!user || user.role !== 'admin') return <main className='admin-page'><h1>אין גישה</h1></main>
+  if (!user || user.role !== 'admin') return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1></main>
 
   const submit = async (event) => {
     event.preventDefault()
@@ -38,7 +38,7 @@ const AdminNewItem = () => {
     <label>תמונות<input name='images' type='file' accept='image/*' multiple /></label>
     <label>צבעים (מופרדים בפסיק)<input name='colors' type='text' /></label>
     <button type='submit' disabled={state.loading}>{state.loading ? 'שולח...' : 'צור מוצר'}</button>
-    {state.error && <p className='error-message'>{state.error}</p>}{state.success && <p className='success-message'>{state.success}</p>}
+    {state.error && <p className='error-message' role='alert'>{state.error}</p>}{state.success && <p className='success-message' role='status'>{state.success}</p>}
   </form></section></AdminShell>
 }
 

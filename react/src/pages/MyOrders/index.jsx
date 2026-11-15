@@ -86,7 +86,7 @@ const MyOrders = () => {
 
   if (!user) {
     return (
-      <main className='orders-page'>
+      <main id='main-content' tabIndex={-1} className='orders-page'>
         <h1>ההזמנות שלי</h1>
         <p>יש להתחבר כדי לראות הזמנות.</p>
         <Link to='/profile/login' className='cart-link nav-dropdown-link-with-icon'>
@@ -97,7 +97,7 @@ const MyOrders = () => {
   }
 
   return (
-    <main className='orders-page'>
+    <main id='main-content' tabIndex={-1} className='orders-page'>
       <h1>ההזמנות שלי</h1>
       {loading && <p>טוען הזמנות...</p>}
       {location.state?.successMessage && (
@@ -160,8 +160,8 @@ const MyOrders = () => {
           <Link to='/gallery' className='order-success-link'>העלאת תמונות מהאירוע</Link>
         </section>
       )}
-      {error && <p className='error-message'>{error}</p>}
-      {actionError && <p className='error-message'>{actionError}</p>}
+      {error && <p className='error-message' role='alert'>{error}</p>}
+      {actionError && <p className='error-message' role='alert'>{actionError}</p>}
 
       {!loading && !error && rentals.length === 0 && (
         <p className='empty-state'>אין עדיין הזמנות. <Link to='/items/maps' className='cart-link'>לקטלוג</Link></p>

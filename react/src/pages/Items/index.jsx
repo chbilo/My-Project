@@ -87,7 +87,7 @@ const Items = () => {
 
   if (!category) {
     return (
-      <main className='items-page'>
+      <main id='main-content' tabIndex={-1} className='items-page'>
         <h1>קטגוריה לא נמצאה</h1>
         <p>בחרו קטגוריה מהתפריט למעלה.</p>
         <Link to={getCategoryPath(ITEM_CATEGORIES[0].slug)} className='cart-link'>
@@ -150,7 +150,7 @@ const Items = () => {
   )
 
   return (
-    <main className='items-page'>
+    <main id='main-content' tabIndex={-1} className='items-page'>
       <div className='items-catalog-layout'>
         <header className='items-catalog-heading'>
           <h1 className='sr-only'>{category.name}</h1>
@@ -264,7 +264,7 @@ const Items = () => {
               {Array.from({ length: 6 }, (_, index) => <div key={index} className='item-skeleton-card' />)}
             </section>
           )}
-          {error && <p className='error-message'>{error}</p>}
+          {error && <p className='error-message' role='alert'>{error}</p>}
           {!loading && !error && categoryItems.length === 0 && (
             <p className='empty-state'>אין מוצרים בקטגוריה זו.</p>
           )}

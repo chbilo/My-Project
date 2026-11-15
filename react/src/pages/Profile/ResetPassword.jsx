@@ -31,7 +31,7 @@ const ResetPassword = () => {
   }
 
   return (
-    <section className='auth-page reset-password-page'>
+    <main id='main-content' tabIndex={-1} className='auth-page reset-password-page'>
       <div className='auth-intro'>
         <p className='eyebrow'>איפוס סיסמה</p>
         <h1>סיסמה חדשה</h1>
@@ -67,7 +67,7 @@ const ResetPassword = () => {
         )}
         {!message && <p className='auth-switch'><Link to='/profile/forgot-password'>בקשת קישור חדש</Link></p>}
       </form>
-    </section>
+    </main>
   )
 }
 

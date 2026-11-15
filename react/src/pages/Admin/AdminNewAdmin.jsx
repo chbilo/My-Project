@@ -7,7 +7,7 @@ const AdminNewAdmin = () => {
   const { user } = useContext(AuthContext)
   const [state, setState] = useState({ loading: false, error: '', success: '' })
 
-  if (!user || user.role !== 'admin') return <main className='admin-page'><h1>אין גישה</h1></main>
+  if (!user || user.role !== 'admin') return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1></main>
 
   const submit = async (event) => {
     event.preventDefault()
@@ -30,8 +30,8 @@ const AdminNewAdmin = () => {
           <label>סיסמה<input name='password' type='password' required /></label>
           <label>טלפון<input name='phone' type='tel' /></label>
           <button type='submit' disabled={state.loading}>{state.loading ? 'שולח...' : 'צור מנהל'}</button>
-          {state.error && <p className='error-message'>{state.error}</p>}
-          {state.success && <p className='success-message'>{state.success}</p>}
+          {state.error && <p className='error-message' role='alert'>{state.error}</p>}
+          {state.success && <p className='success-message' role='status'>{state.success}</p>}
         </form>
       </section>
     </AdminShell>

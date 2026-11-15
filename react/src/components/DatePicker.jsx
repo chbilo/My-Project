@@ -53,6 +53,16 @@ const isExcludedHoliday = (event) => {
 
 const eventsByYear = new Map()
 
+const weekdays = [
+  { abbreviation: 'א', name: 'יום ראשון' },
+  { abbreviation: 'ב', name: 'יום שני' },
+  { abbreviation: 'ג', name: 'יום שלישי' },
+  { abbreviation: 'ד', name: 'יום רביעי' },
+  { abbreviation: 'ה', name: 'יום חמישי' },
+  { abbreviation: 'ו', name: 'יום שישי' },
+  { abbreviation: 'ש', name: 'יום שבת' },
+]
+
 const getEventsForYear = (hebrewYear) => {
   if (eventsByYear.has(hebrewYear)) {
     return eventsByYear.get(hebrewYear)
@@ -244,6 +254,8 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
     <div
       className={`date-picker${showCalendarDetails ? '' : ' date-picker-compact'}`}
       dir="rtl"
+      role="group"
+      aria-label="לוח שנה לבחירת תאריך"
     >
       <div className="date-picker-header">
         <button
@@ -254,7 +266,9 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
           ‹
         </button>
 
-        <strong>{monthData.monthLabel}</strong>
+        <strong aria-live="polite" aria-atomic="true">
+          {monthData.monthLabel}
+        </strong>
 
         <button
           type="button"
@@ -270,8 +284,11 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
       </div>
 
       <div className="date-picker-weekdays">
-        {['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'].map((day) => (
-          <span key={day}>{day}</span>
+        {weekdays.map((day) => (
+          <span key={day.abbreviation}>
+            <span aria-hidden="true">{day.abbreviation}</span>
+            <span className="sr-only">{day.name}</span>
+          </span>
         ))}
       </div>
 
@@ -288,6 +305,24 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
           const isSelected = value === dateKey
           const hdate = toHDate(date)
           const { holidays, parsha } = getCalendarDetails(date)
+          const dateLabel = date.toLocaleDateString('he-IL', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+          const availabilityLabel = isClosed
+            ? 'היום סגור להזמנות'
+            : isBeforeMin
+              ? 'לא ניתן לבחור תאריך שעבר'
+              : ''
+          const dateDescription = [
+            dateLabel,
+            isSelected && 'נבחר',
+            availabilityLabel,
+            ...holidays,
+            parsha,
+          ].filter(Boolean).join(', ')
 
           return (
             <button
@@ -295,6 +330,8 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
               type="button"
               className={`calendar-day${isClosed ? ' closed' : ''}${isSelected ? ' selected' : ''}`}
               disabled={isClosed || isBeforeMin}
+              aria-label={dateDescription}
+              aria-pressed={isSelected}
               onClick={() => onChange(dateKey)}
               title={isClosed ? 'היום סגור להזמנות' : undefined}
             >
@@ -327,7 +364,9 @@ const DatePicker = ({ value, onChange, min, showCalendarDetails = true }) => {
       </div>
 
       {footerText && (
-        <p className="date-picker-value">נבחר: {footerText}</p>
+        <p className="date-picker-value" aria-live="polite" aria-atomic="true">
+          נבחר: {footerText}
+        </p>
       )}
     </div>
   )

@@ -39,7 +39,7 @@ const AdminRentals = () => {
   }
   useEffect(() => { if (user?.role === 'admin') load() }, [user])
 
-  if (!user || user.role !== 'admin') return <main className='admin-page'><h1>אין גישה</h1></main>
+  if (!user || user.role !== 'admin') return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1></main>
 
   const update = async (id, status) => {
     try { await api.put(`rentals/${id}`, { status }); await load() } catch (err) { setError(err.response?.data?.message || err.message || 'עדכון הסטטוס נכשל') }
@@ -119,7 +119,7 @@ const AdminRentals = () => {
   return (
     <AdminShell title='השאלות' description='צפייה בהזמנות ועדכון מצב הטיפול בהן.'>
       {loading && <p className='admin-state is-loading' role='status'>טוען השאלות...</p>}
-      {!loading && error && <p className='error-message'>{error}</p>}
+      {!loading && error && <p className='error-message' role='alert'>{error}</p>}
       {!loading && !error && rentals.length === 0 && <p className='admin-state is-empty' role='status'>אין הזמנות עדיין.</p>}
       {!loading && !error && rentals.length > 0 && (
         <>

@@ -8,10 +8,14 @@ const Layout = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0)
+        document.title = 'גמח כלים בית וגן'
     }, [pathname])
 
     return (
         <>
+            <a className='skip-link' href='#main-content'>
+                דלג לתוכן הראשי
+            </a>
             <Header />
             <div className='home-marquee' aria-label='השאלה לאירועים'>
                 <div className='home-marquee-track'>
@@ -19,21 +23,21 @@ const Layout = () => {
                         <span>פרטים קטנים. רגעים גדולים.</span><b>✦</b>
                         <span>כל מה שצריך לשולחן אירוע מושלם</span><b>✦</b>
                         <span>בוחרים. משתמשים. מחזירים.</span><b>✦</b>
-                        <span>אירוח יפה, פשוט ונגיש.</span><b>✦</b>
+                        <span>אירוע יפה, פשוט ונגיש.</span><b>✦</b>
                         <span>פרטים קטנים. רגעים גדולים.</span><b>✦</b>
                         <span>כל מה שצריך לשולחן אירוע מושלם</span><b>✦</b>
                         <span>בוחרים. משתמשים. מחזירים.</span><b>✦</b>
-                        <span>אירוח יפה, פשוט ונגיש.</span><b>✦</b>
+                        <span>אירוע יפה, פשוט ונגיש.</span><b>✦</b>
                     </div>
                     <div className='home-marquee-group' aria-hidden='true'>
                         <span>פרטים קטנים. רגעים גדולים.</span><b>✦</b>
                         <span>כל מה שצריך לשולחן אירוע מושלם</span><b>✦</b>
                         <span>בוחרים. משתמשים. מחזירים.</span><b>✦</b>
-                        <span>אירוח יפה, פשוט ונגיש.</span><b>✦</b>
+                        <span>אירוע יפה, פשוט ונגיש.</span><b>✦</b>
                         <span>פרטים קטנים. רגעים גדולים.</span><b>✦</b>
                         <span>כל מה שצריך לשולחן אירוע מושלם</span><b>✦</b>
                         <span>בוחרים. משתמשים. מחזירים.</span><b>✦</b>
-                        <span>אירוח יפה, פשוט ונגיש.</span><b>✦</b>
+                        <span>אירוע יפה, פשוט ונגיש.</span><b>✦</b>
                     </div>
                 </div>
             </div>
@@ -42,6 +46,7 @@ const Layout = () => {
             <footer className='site-footer'>
                 <span>גמח כלים בית וגן</span>
                 <Link to='/terms'>תקנון השאלה</Link>
+                <Link to='/accessibility'>הצהרת נגישות</Link>
             </footer>
         </>
     )

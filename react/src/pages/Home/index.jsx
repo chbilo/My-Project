@@ -5,8 +5,8 @@ import barToolsBadge from '../../assets/Pink Hebrew vase circle badge-3.png'
 
 const Home = () => {
     return (
-        <main className='home-page'>
-            <section className='home-hero' aria-label='ברוכים הבאים לשמחת יהודית'>
+        <main id='main-content' tabIndex={-1} className='home-page'>
+            <section className='home-hero' aria-label='ברוכים הבאים לגמח כלים בית וגן'>
                 <div className='home-hero-copy'>
                     <p className='eyebrow'>השאלה לאירועים עם אופי</p>
                     <h1>הפרטים הקטנים<br />שעושים את האירוע</h1>
@@ -16,7 +16,7 @@ const Home = () => {
             </section>
             <section className='home-collections' aria-labelledby='home-collections-title'>
                 <p className='eyebrow'>שמחה מתחילה בפרטים הקטנים</p>
-                <h2 id='home-collections-title'>כל מה שצריך לאירוח מושלם</h2>
+                <h2 id='home-collections-title'>כל מה שצריך לאירוע מושלם</h2>
                 <p className='home-collections-intro'>מבחר כלים ואביזרים להשאלה, כדי שתוכלו להתמקד במה שבאמת חשוב — בשמחה.</p>
                 <div id='home-category-cards' className='home-badge-links' aria-label='קטגוריות מוצרים'>
                     <Link to='/items/maps' className='home-badge-link'>

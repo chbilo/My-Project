@@ -26,7 +26,7 @@ const AdminInspirations = () => {
     }
   }
   useEffect(() => { if (user?.role === 'admin') load() }, [user])
-  if (!user || user.role !== 'admin') return <main className='admin-page'><h1>אין גישה</h1></main>
+  if (!user || user.role !== 'admin') return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1></main>
 
   const submit = async (event) => {
     event.preventDefault()
@@ -108,8 +108,8 @@ const AdminInspirations = () => {
         <label className='admin-checkbox'><input name='isPublished' type='checkbox' defaultChecked /> הצג בגלריה</label>
         <label>תמונה או וידאו<input name='image' type='file' accept='image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime' required /></label>
         <button type='submit' disabled={loading}>{loading ? 'מעלה...' : 'הוסף תמונה'}</button>
-        {error && <p className='error-message'>{error}</p>}
-        {success && <p className='success-message'>{success}</p>}
+        {error && <p className='error-message' role='alert'>{error}</p>}
+        {success && <p className='success-message' role='status'>{success}</p>}
       </form>
     </section>
     {listLoading ? <p className='admin-state is-loading' role='status'>טוען תמונות השראה...</p> : !error && inspirations.length === 0 ? <p className='admin-state is-empty' role='status'>אין עדיין תמונות השראה.</p> : !error && <ul className='admin-inspirations-list'>

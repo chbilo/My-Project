@@ -29,7 +29,7 @@ const AdminItems = () => {
   }
   useEffect(() => { if (user?.role === 'admin') load() }, [user])
 
-  if (!user || user.role !== 'admin') return <main className='admin-page'><h1>אין גישה</h1></main>
+  if (!user || user.role !== 'admin') return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1></main>
 
   const remove = async (id) => {
     if (!window.confirm('למחוק את המוצר מהקטלוג?')) return
@@ -140,7 +140,7 @@ const AdminItems = () => {
         </label>
       )}
       {loading && <p className='admin-state is-loading' role='status'>טוען מוצרים...</p>}
-      {!loading && error && <p className='error-message'>{error}</p>}
+      {!loading && error && <p className='error-message' role='alert'>{error}</p>}
       {!loading && !error && items.length === 0 && <p className='admin-state is-empty' role='status'>אין מוצרים עדיין.</p>}
       {!loading && !error && items.length > 0 && filteredItems.length === 0 && <p className='admin-state is-empty' role='status'>לא נמצאו מוצרים התואמים לחיפוש.</p>}
       {!loading && !error && filteredItems.length > 0 && <ul className='admin-items-list'>

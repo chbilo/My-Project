@@ -31,7 +31,7 @@ const AdminUsers = () => {
   }, [user])
 
   if (!user || user.role !== 'admin') {
-    return <main className='admin-page'><h1>אין גישה</h1><p>עבור דף זה דרוש משתמש מנהל.</p></main>
+    return <main id='main-content' tabIndex={-1} className='admin-page'><h1>אין גישה</h1><p>עבור דף זה דרוש משתמש מנהל.</p></main>
   }
 
   const normalizedSearch = searchTerm.trim().toLocaleLowerCase('he-IL')
@@ -44,7 +44,7 @@ const AdminUsers = () => {
   return (
     <AdminShell title='משתמשים' description='צפייה בפרטי המשתמשים ובהרשאות שלהם.'>
       {loading && <p className='admin-state is-loading' role='status'>טוען משתמשים...</p>}
-      {error && <p className='error-message'>{error}</p>}
+      {error && <p className='error-message' role='alert'>{error}</p>}
       {!loading && !error && (
         <>
           <section className='admin-users-controls' aria-label='חיפוש וסינון משתמשים'>

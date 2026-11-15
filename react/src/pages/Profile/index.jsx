@@ -9,7 +9,7 @@ const Profile = () => {
   }
 
   return (
-    <main className='profile-layout'>
+    <main id='main-content' tabIndex={-1} className='profile-layout'>
       <section className='profile-landing-intro'>
         <p className='eyebrow'>החשבון שלכם, במקום אחד</p>
         <h1>אזור אישי</h1>

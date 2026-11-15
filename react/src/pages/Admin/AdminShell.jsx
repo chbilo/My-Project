@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 
 const AdminShell = ({ title, description, children, className = '' }) => (
-  <main className={`admin-page ${className}`.trim()}>
+  <main id='main-content' tabIndex={-1} className={`admin-page ${className}`.trim()}>
     <nav className='admin-nav' aria-label='ניווט מנהל'>
       <NavLink to='/admin' end>לוח בקרה</NavLink>
       <NavLink to='/admin/rentals'>השאלות</NavLink>

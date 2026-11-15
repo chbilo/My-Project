@@ -206,7 +206,7 @@ const Cart = () => {
 
   if (cartLoading) {
     return (
-      <main className='cart-page'>
+      <main id='main-content' tabIndex={-1} className='cart-page'>
         <h1>העגלה שלי</h1>
         <p>טוען עגלה...</p>
       </main>
@@ -215,7 +215,7 @@ const Cart = () => {
 
   if (items.length === 0) {
     return (
-      <main className='cart-page'>
+      <main id='main-content' tabIndex={-1} className='cart-page'>
         <h1>העגלה שלי</h1>
         <section className='empty-cart' aria-labelledby='empty-cart-title'>
           <p className='empty-cart-icon' aria-hidden='true'>+</p>
@@ -234,7 +234,7 @@ const Cart = () => {
   }
 
   return (
-    <main className='cart-page'>
+    <main id='main-content' tabIndex={-1} className='cart-page'>
       <h1>העגלה שלי</h1>
       <p className='cart-summary'>{totalItems} פריטים בעגלה</p>
       {chairCoverTypesCount >= 2 && (
@@ -313,7 +313,7 @@ const Cart = () => {
           <section className='cart-rental-cost' aria-label='חישוב עלות ההשאלה'>
             <h3>עלות ההשאלה</h3>
             {unknownCategories.length > 0 ? (
-              <p className='error-message'>
+              <p className='error-message' role='alert'>
                 אין תעריף מוגדר עבור: {unknownCategories.join(', ')}.
               </p>
             ) : rentalCostBreakdown.length > 0 ? (
@@ -375,7 +375,7 @@ const Cart = () => {
               />
               <span>קראתי ואני מאשר/ת את <Link to='/terms'>תקנון ההשאלה</Link>.</span>
             </label>
-            {error && <p className='error-message'>{error}</p>}
+            {error && <p className='error-message' role='alert'>{error}</p>}
             <button type='submit' disabled={submitting}>
               {submitting ? 'שולח...' : 'שלח הזמנה'}
             </button>

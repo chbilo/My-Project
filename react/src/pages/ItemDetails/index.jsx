@@ -31,13 +31,13 @@ const ItemDetails = () => {
   }, [itemId])
 
   if (loading) {
-    return <main className='item-details-page'><div className='item-details-skeleton' aria-label='טוען פרטי מוצר' /></main>
+    return <main id='main-content' tabIndex={-1} className='item-details-page'><div className='item-details-skeleton' aria-label='טוען פרטי מוצר' /></main>
   }
 
   if (error || !item) {
     return (
-      <main className='item-details-page'>
-        <p className='error-message'>{error || 'המוצר לא נמצא'}</p>
+      <main id='main-content' tabIndex={-1} className='item-details-page'>
+        <p className='error-message' role='alert'>{error || 'המוצר לא נמצא'}</p>
         <Link to='/items/maps' className='cart-link'>חזרה למוצרים</Link>
       </main>
     )
@@ -47,7 +47,7 @@ const ItemDetails = () => {
   const selectedImage = images[selectedImageIndex] || images[0]
 
   return (
-    <main className='item-details-page'>
+    <main id='main-content' tabIndex={-1} className='item-details-page'>
       <Link
         to={getCategoryPath(categorySlug)}
         className='cart-link'

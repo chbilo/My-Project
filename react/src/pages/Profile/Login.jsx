@@ -46,7 +46,7 @@ const Login = () => {
           <input type='password' name='password' placeholder='הקלידו סיסמה' required />
         </label>
         <p className='auth-switch'><Link to='/profile/forgot-password'>שכחתם סיסמה?</Link></p>
-        {error && <p className='error-message'>{error}</p>}
+        {error && <p className='error-message' role='alert'>{error}</p>}
         <button type='submit' className='auth-primary-button' disabled={loading}>
           {loading ? 'טוען...' : 'התחבר'}
         </button>

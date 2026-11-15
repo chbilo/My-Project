@@ -176,6 +176,13 @@ const handleChat = async (req, res) => {
             }
         ])
 
+        const recommendedItems = items.map((item) => ({
+            id: item._id.toString(),
+            title: item.title || item.code || 'פריט',
+            code: item.code || null,
+            category: item.category
+        }))
+
         const itemsList = items.map((item) => {
             const itemName = item.title || item.code || 'פריט'
 
@@ -185,6 +192,7 @@ const handleChat = async (req, res) => {
 
             const itemDetails = [
                 `קטגוריה: ${item.category || 'לא צוינה'}`,
+                item.code && `מק"ט: ${item.code}`,
                 item.subcategory && `תת-קטגוריה: ${item.subcategory}`,
                 `צבעים: ${itemColors}`,
                 item.size && `גודל: ${item.size}`,
@@ -209,7 +217,8 @@ ${itemsList}
 1. אל תמציא פריטים או פרטי מלאי שאינם מופיעים ברשימה.
 2. אם לא נמצאו פריטים מתאימים, אמור זאת בבירור.
 3. ענה בעברית, בנימוס ובקצרה.
-4. השתמש בהיסטוריית השיחה כדי להבין למה המשתמש מתייחס, אך הסתמך על רשימת המוצרים העדכנית בלבד לגבי פריטים וזמינות.
+4. אם אתה מציין מק"ט, העתק אותו בדיוק כפי שמופיע ברשימה.
+5. השתמש בהיסטוריית השיחה כדי להבין למה המשתמש מתייחס, אך הסתמך על רשימת המוצרים העדכנית בלבד לגבי פריטים וזמינות.
 `
 
         const contentParts = [
@@ -290,12 +299,13 @@ ${itemsList}
         }
 
         if (!generateImage) {
-            return res.json({ reply })
+            return res.json({ reply, recommendedItems })
         }
 
         if (items.length === 0) {
             return res.json({
                 reply,
+                recommendedItems,
                 imageError: 'לא נמצאו כלים מתאימים במלאי, ולכן לא יצרתי הדמיה.'
             })
         }
@@ -303,6 +313,7 @@ ${itemsList}
         if (imageReferenceParts.length === 0) {
             return res.json({
                 reply,
+                recommendedItems,
                 imageError: 'לא נמצאו תמונות של הכלים המתאימים, ולכן לא ניתן ליצור הדמיה.'
             })
         }
@@ -345,6 +356,7 @@ ${reply}
             if (!generatedImage?.data) {
                 return res.json({
                     reply,
+                    recommendedItems,
                     imageError: 'לא התקבלה תמונה ממודל יצירת התמונות.'
                 })
             }
@@ -366,7 +378,7 @@ ${reply}
                 })
             })
 
-            return res.json({ reply, image })
+            return res.json({ reply, recommendedItems, image })
         } catch (imageError) {
             const status =
                 Number.isInteger(imageError.status)
@@ -380,6 +392,7 @@ ${reply}
 
             return res.json({
                 reply,
+                recommendedItems,
                 imageError:
                     'התשובה התקבלה, אבל יצירת התמונה נכשלה. נבדוק את הגדרת Gemini API בשלב הבדיקה.'
             })

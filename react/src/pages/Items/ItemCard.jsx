@@ -166,7 +166,7 @@ const ItemCard = ({
                 הוסף לעגלה
               </button>
               {added && (
-                <p className='success-message item-added-message'>נוסף לעגלה</p>
+                <p className='success-message item-added-message' role='status'>נוסף לעגלה</p>
               )}
             </>
           ) : (

@@ -47,7 +47,7 @@ const Register = () => {
                     <input name='phone' type='tel' />
                 </label>
                 <button type='submit' className='auth-primary-button'>יצירת חשבון</button>
-                {errTxt && <p className='error-message'>{errTxt}</p>}
+                {errTxt && <p className='error-message' role='alert'>{errTxt}</p>}
                 <p className='auth-switch'>כבר יש לכם חשבון? <Link to='/profile/login'><img className='nav-dropdown-link-icon' src={addIcon} alt='' />להתחברות</Link></p>
             </form>
         </section>

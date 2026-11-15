@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 const Terms = () => {
     return (
-        <main className='terms-page'>
+        <main id='main-content' tabIndex={-1} className='terms-page'>
             <header className='terms-heading'>
                 <p className='eyebrow'>מידע חשוב לפני ההזמנה</p>
                 <h1>תקנון השאלה</h1>

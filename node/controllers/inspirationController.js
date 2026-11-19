@@ -30,7 +30,7 @@ const createInspiration = async (req, res) => {
     }
 
     const inspiration = await Inspiration.create({
-      image: `/uploads/${req.file.filename}`,
+      image: req.file.location,
       mediaType: req.file.mimetype.startsWith('video/') ? 'video' : 'image',
       title: req.body.title || '',
       description: req.body.description || '',
@@ -60,7 +60,7 @@ const updateInspiration = async (req, res) => {
     }
 
     if (req.file) {
-      data.image = `/uploads/${req.file.filename}`
+      data.image = req.file.location
       data.mediaType = req.file.mimetype.startsWith('video/') ? 'video' : 'image'
     }
 

@@ -68,7 +68,7 @@ const createItem = async (req, res) => {
     const data = { ...req.body }
 
     if (req.files && req.files.length > 0) {
-      data.images = req.files.map((file) => `/uploads/${file.filename}`)
+      data.images = req.files.map((file) => file.location)
     }
 
     if (data.isAvailable !== undefined) {
@@ -142,7 +142,7 @@ const updateItem = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       const uploadedImages = req.files.map(
-        (file) => `/uploads/${file.filename}`
+        (file) => file.location
       )
 
       const mergedImages = [

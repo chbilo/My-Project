@@ -1,4 +1,5 @@
 const allowedOrigins = [
+    'https://my-project-2yw.pages.dev',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5174',

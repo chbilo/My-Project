@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { API_BASE_URL } from '../api/axios'
+import { API_ROOT_URL } from '../api/axios'
 import { ITEM_CATEGORIES } from '../constants/itemCategories'
 import AccessibilityWidget from './AccessibilityWidget'
 
@@ -97,7 +97,7 @@ const Chat = () => {
         setLoading(true)
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/chat`, {
+            const response = await fetch(`${API_ROOT_URL}/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

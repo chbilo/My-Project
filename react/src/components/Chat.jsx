@@ -84,7 +84,7 @@ const Chat = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [accessibilityOpen, setAccessibilityOpen] = useState(false)
 
-    const sendMessage = async (generateImage = false) => {
+    const sendMessage = async () => {
         const messageText = message.trim()
 
         if (!messageText || loading) {
@@ -104,7 +104,6 @@ const Chat = () => {
                 },
                 body: JSON.stringify({
                     message: messageText,
-                    generateImage,
                     history: conversationHistory.slice(-10)
                 })
             })
@@ -284,7 +283,7 @@ const Chat = () => {
                             onChange={(event) => setMessage(event.target.value)}
                             onKeyDown={(event) => {
                                 if (event.key === 'Enter') {
-                                    sendMessage(false)
+                                    sendMessage()
                                 }
                             }}
                             placeholder='תאר את האירוע או שאל על הכלים...'
@@ -292,38 +291,10 @@ const Chat = () => {
 
                         <button
                             type='button'
-                            onClick={() => sendMessage(false)}
+                            onClick={sendMessage}
                             disabled={loading || !message.trim()}
                         >
                             שלח
-                        </button>
-                    </div>
-
-                    <div
-                        style={{
-                            padding: '0 12px 12px',
-                            background: 'rgba(255, 255, 255, 0.9)'
-                        }}
-                    >
-                        <button
-                            type='button'
-                            onClick={() => sendMessage(true)}
-                            disabled={loading || !message.trim()}
-                            style={{
-                                width: '100%',
-                                border: 'none',
-                                borderRadius: '12px',
-                                background: '#5b7774',
-                                color: '#fff',
-                                padding: '11px 14px',
-                                fontWeight: 700,
-                                cursor: loading || !message.trim()
-                                    ? 'wait'
-                                    : 'pointer',
-                                opacity: loading || !message.trim() ? 0.7 : 1
-                            }}
-                        >
-                            שלח והפק הדמיה
                         </button>
                     </div>
                 </section>

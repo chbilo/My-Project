@@ -72,7 +72,6 @@ const AdminRentals = () => {
 
     try {
       const form = new FormData(event.target)
-      const nextNotes = form.get('notes') || ''
       const nextGroups = rental.groups.map((group, groupIndex) => ({
         items: group.items.map((entry, itemIndex) => {
           const value = Number(form.get(`quantity-${groupIndex}-${itemIndex}`))
@@ -87,7 +86,6 @@ const AdminRentals = () => {
       }))
 
       await api.put(`rentals/${rental._id}`, {
-        notes: nextNotes,
         groups: nextGroups
       })
 
@@ -172,11 +170,6 @@ const AdminRentals = () => {
           {editingRentalId === rental._id ? (
             <form className='admin-form admin-rental-edit-form' onSubmit={(event) => saveEdit(event, rental)}>
               <p><strong>תאריך אירוע:</strong> {date(rental.eventDate)}</p>
-              <label>
-                הערות
-                <textarea name='notes' rows='3' defaultValue={rental.notes || ''} />
-              </label>
-
               {rental.groups?.map((group, groupIndex) => (
                 <div key={`${rental._id}-${groupIndex}`} className='order-group'>
                   <p><strong>איסוף:</strong> {date(group.pickupDate)} | <strong>החזרה:</strong> {date(group.returnDate)}</p>
@@ -217,8 +210,6 @@ const AdminRentals = () => {
                 <p><strong>אימייל:</strong> {rental.user?.email || 'לא קיים'}</p>
                 {rental.user?.phone && <p><strong>טלפון:</strong> {rental.user.phone}</p>}
               </section>
-
-              {rental.notes && <p className='order-note'><strong>הערות:</strong> {rental.notes}</p>}
 
               {rental.groups?.map((group, index) => <div key={`${rental._id}-${index}`} className='order-group'>
                 <p><strong>איסוף:</strong> {date(group.pickupDate)} | <strong>החזרה:</strong> {date(group.returnDate)}</p>

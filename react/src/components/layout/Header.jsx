@@ -39,6 +39,7 @@ const Header = () => {
     const { totalItems } = useContext(CartContext)
     const [productsOpen, setProductsOpen] = useState(false)
     const [profileOpen, setProfileOpen] = useState(false)
+    const [mobileOpen, setMobileOpen] = useState(false)
     const [cartBump, setCartBump] = useState(false)
     const productsDropdownRef = useRef(null)
     const profileDropdownRef = useRef(null)
@@ -60,6 +61,7 @@ const Header = () => {
     useEffect(() => {
         setProductsOpen(false)
         setProfileOpen(false)
+        setMobileOpen(false)
     }, [location.pathname])
 
     useEffect(() => {
@@ -93,7 +95,17 @@ const Header = () => {
                     <span className='site-brand-mark'><img src={bowlOnFootIcon} alt='' /></span>
                     <span>גמ"ח כלים בית וגן</span>
                 </NavLink>
-                <nav className='site-nav' aria-label='ניווט ראשי'>
+                <button
+                    type='button'
+                    className='mobile-nav-toggle'
+                    aria-expanded={mobileOpen}
+                    aria-controls='main-site-navigation'
+                    aria-label={mobileOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
+                    onClick={() => setMobileOpen((prev) => !prev)}
+                >
+                    <span aria-hidden='true'>{mobileOpen ? '×' : '☰'}</span>
+                </button>
+                <nav id='main-site-navigation' className={`site-nav${mobileOpen ? ' is-mobile-open' : ''}`} aria-label='ניווט ראשי'>
                     <NavLink to='/'><HomeMenuIcon />בית</NavLink>
 
                     <div className='nav-dropdown' ref={productsDropdownRef}>

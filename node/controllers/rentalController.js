@@ -35,7 +35,6 @@ const sendNewRentalNotification = async (rental) => {
         <p><strong>תאריך האירוע:</strong> ${new Date(rental.eventDate).toLocaleDateString('he-IL')}</p>
         <p><strong>פריטים:</strong></p>
         <ul>${itemRows}</ul>
-        <p><strong>הערות:</strong> ${escapeHtml(rental.notes || 'אין')}</p>
         <p>מספר הזמנה: ${escapeHtml(rental._id)}</p>
       `
     })
@@ -146,8 +145,7 @@ const createRental = async (req, res) => {
   try {
     const {
       eventDate,
-      groups,
-      notes
+      groups
     } = req.body
 
     if (!eventDate) {
@@ -229,7 +227,7 @@ const createRental = async (req, res) => {
       user: req.user._id,
       eventDate: startOfDay(event),
       groups: processedGroups,
-      notes
+      notes: ''
     })
 
     const saved = await newRental.save()
@@ -385,9 +383,6 @@ const updateRental = async (req, res) => {
       rental.status = nextStatus
     }
 
-    if (req.body.notes !== undefined) {
-      rental.notes = req.body.notes
-    }
 
     await rental.save()
 

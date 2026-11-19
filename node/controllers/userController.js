@@ -37,9 +37,17 @@ const updateUser = async (req, res) => {
   const user = await User.findById(id)
   if (!user) return res.status(404).json({ message: 'User not found' })
   user.name = name
-  user.email = email || user.email
-  user.phone = phone || user.phone
-  if (role && req.user.role === 'admin') user.role = role
+  if (email) user.email = email
+  if (phone !== undefined) user.phone = phone
+  if (role && req.user.role === 'admin') {
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role' })
+    }
+    if (req.user._id.toString() === id.toString() && role !== 'admin') {
+      return res.status(400).json({ message: 'Administrator cannot remove their own admin role' })
+    }
+    user.role = role
+  }
   await user.save()
   res.json({
     _id: user._id,

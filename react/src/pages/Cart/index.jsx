@@ -33,7 +33,6 @@ const Cart = () => {
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const [eventDate, setEventDate] = useState('')
-  const [notes, setNotes] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -184,8 +183,7 @@ const Cart = () => {
 
       await api.post('rentals', {
         eventDate,
-        groups: buildGroups(),
-        notes
+        groups: buildGroups()
       })
       clearCart()
       navigate('/my-orders', {
@@ -357,15 +355,6 @@ const Cart = () => {
                 </p>
               </section>
             )}
-            <label>
-              הערות
-              <textarea
-                rows='3'
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder='כתובת, שעת איסוף, או כל פרט נוסף'
-              />
-            </label>
             <label className='cart-terms-acceptance'>
               <input
                 type='checkbox'

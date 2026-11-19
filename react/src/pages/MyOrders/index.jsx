@@ -231,7 +231,6 @@ const MyOrders = () => {
               {rental.user?.phone && <p><strong>טלפון:</strong> {rental.user.phone}</p>}
             </section>
 
-            {rental.notes && <p className='order-note'><strong>הערות:</strong> {rental.notes}</p>}
 
             {rental.groups?.map((group, index) => (
               <div key={`${rental._id}-${index}`} className='order-group'>

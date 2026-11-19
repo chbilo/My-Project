@@ -638,6 +638,61 @@ body .admin-item-actions button.admin-delete-btn {
   text-align: right;
 }
 
+.admin-user-edit-form {
+  margin: 16px 0 20px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.admin-user-edit-form h2 {
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.admin-user-edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-user-edit-actions button,
+.admin-user-edit-button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--teal);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-user-edit-actions .admin-secondary-btn {
+  background: #53676b;
+}
+
+@media (max-width: 600px) {
+  .admin-user-edit-actions {
+    flex-direction: column;
+  }
+
+  .admin-users-table {
+    min-width: 760px;
+  }
+
+  .admin-page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .admin-nav {
+    gap: 6px;
+  }
+}
+
 /* Admin dashboard visual refresh */
 .admin-home-page {
   max-width: 1240px;

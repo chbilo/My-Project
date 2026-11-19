@@ -5516,6 +5516,21 @@ body::before {
   color: var(--teal-dark);
 }
 
+.mobile-nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 @keyframes dropdown-in {
   from {
     opacity: 0;
@@ -5551,17 +5566,46 @@ body::before {
   }
 
   .site-header-content {
-    align-items: stretch;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    flex-direction: unset;
     gap: 8px;
   }
 
+  .mobile-nav-toggle {
+    display: inline-flex;
+  }
+
   .site-nav {
+    display: none;
+    grid-column: 1 / -1;
     width: 100%;
+    max-height: calc(100vh - 130px);
     justify-content: flex-start;
-    overflow-x: auto;
+    align-items: stretch;
+    flex-direction: column;
+    overflow-y: auto;
     border-radius: 16px;
     scrollbar-width: none;
+  }
+
+  .site-nav.is-mobile-open {
+    display: flex;
+  }
+
+  .site-nav>a:not(.site-brand),
+  .nav-dropdown-trigger,
+  .cart-nav-link {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    margin-top: 4px;
   }
 
   .site-nav::-webkit-scrollbar {

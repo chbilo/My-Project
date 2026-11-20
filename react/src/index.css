@@ -4938,8 +4938,8 @@ html {
 
 @media (max-width: 768px) {
   .home-marquee {
-    top: 84px;
-    margin: 0;
+    top: 63px;
+    margin: -1px 0 0;
   }
 
   .home-hero-scroll {

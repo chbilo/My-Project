@@ -32,7 +32,7 @@ const forgotPassword = async (req, res) => {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY)
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'האתר שלי <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM_EMAIL || 'גמ"ח כלים לשמחות <noreply@gmachsmachot.com>',
       to: email,
       subject: 'איפוס סיסמה',
       html: `<p>קיבלנו בקשה לאיפוס הסיסמה שלך.</p><p><a href="${resetUrl.toString()}">לאיפוס הסיסמה לחצו כאן</a></p><p>הקישור תקף למשך 15 דקות וניתן להשתמש בו פעם אחת בלבד.</p>`

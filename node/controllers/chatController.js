@@ -34,7 +34,7 @@ const sendGeneratedImageEmail = async (imageData, imageMimeType) => {
     const extension = extensionByMimeType[imageMimeType] || 'png'
     const resend = new Resend(process.env.RESEND_API_KEY)
     const { error } = await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'האתר שלי <onboarding@resend.dev>',
+        from: process.env.RESEND_FROM_EMAIL || 'גמ"ח כלים לשמחות <noreply@gmachsmachot.com>',
         to: process.env.ADMIN_NOTIFICATION_EMAIL || 'chayamb0236@gmail.com',
         subject: 'הדמיה חדשה נוצרה באתר',
         html: '<p>מצורפת ההדמיה שנוצרה באמצעות יועץ העיצוב.</p>',

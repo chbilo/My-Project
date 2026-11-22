@@ -24,7 +24,7 @@ const sendNewRentalNotification = async (rental) => {
       `<li>${escapeHtml(item.title)}: ${quantity}</li>`
     ).join('')
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'האתר שלי <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM_EMAIL || 'גמ"ח כלים לשמחות <noreply@gmachsmachot.com>',
       to: process.env.ADMIN_NOTIFICATION_EMAIL || 'chayamb0236@gmail.com',
       subject: 'הזמנה חדשה ממתינה לאישור',
       html: `

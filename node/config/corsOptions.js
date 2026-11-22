@@ -4,7 +4,8 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5500',
-    "http://www.mysite.com"
+    "https://gmachsmachot.com",
+    "https://www.gmachsmachot.com",
 ]
 
 const corsOptions = {

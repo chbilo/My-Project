@@ -363,6 +363,18 @@ const updateRental = async (req, res) => {
         }
       }
 
+      const chairCoverQuantity = requestedItems.reduce((total, entry) => {
+        const item = dbItems.find((dbItem) => dbItem._id.toString() === entry.item.toString())
+        return item?.category === 'מפות' && item?.subcategory === 'כיסויים לכסאות'
+          ? total + Number(entry.quantity || 0)
+          : total
+      }, 0)
+      if (chairCoverQuantity > 60) {
+        return res.status(400).json({
+          message: 'ניתן להזמין עד 60 כיסויים לכסאות בהזמנה אחת.'
+        })
+      }
+
       rental.eventDate = startOfDay(eventDate)
       rental.groups = processedGroups
     }

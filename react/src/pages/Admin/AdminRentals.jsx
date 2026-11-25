@@ -22,6 +22,10 @@ const AdminRentals = () => {
   const [savingRentalId, setSavingRentalId] = useState(null)
   const [availabilityByItemId, setAvailabilityByItemId] = useState({})
   const [availabilityLoading, setAvailabilityLoading] = useState(false)
+  const [removedEntriesByRental, setRemovedEntriesByRental] = useState({})
+  const [addedEntriesByRental, setAddedEntriesByRental] = useState({})
+  const [addCodeByRental, setAddCodeByRental] = useState({})
+  const [addQuantityByRental, setAddQuantityByRental] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -62,7 +66,58 @@ const AdminRentals = () => {
   const startEditing = (rental) => {
     setEditingRentalId(rental._id)
     setError('')
+    setRemovedEntriesByRental((prev) => ({ ...prev, [rental._id]: [] }))
+    setAddedEntriesByRental((prev) => ({ ...prev, [rental._id]: [] }))
+    setAddCodeByRental((prev) => ({ ...prev, [rental._id]: '' }))
+    setAddQuantityByRental((prev) => ({ ...prev, [rental._id]: 1 }))
     loadAvailability(rental.eventDate ? new Date(rental.eventDate).toISOString().split('T')[0] : '')
+  }
+
+  const removeEntry = (rentalId, groupIndex, itemIndex) => {
+    const key = `${groupIndex}-${itemIndex}`
+    setRemovedEntriesByRental((prev) => ({
+      ...prev,
+      [rentalId]: [...(prev[rentalId] || []), key].filter((value, index, array) => array.indexOf(value) === index)
+    }))
+  }
+
+  const addItemByCode = (rental) => {
+    const code = (addCodeByRental[rental._id] || '').trim().toLocaleLowerCase('he-IL')
+    const quantity = Number(addQuantityByRental[rental._id] || 1)
+
+    if (!code) {
+      setError('יש להזין קוד מוצר')
+      return
+    }
+    if (!Number.isFinite(quantity) || quantity < 1) {
+      setError('כמות ההוספה חייבת להיות לפחות 1')
+      return
+    }
+
+    const item = Object.values(availabilityByItemId).find((candidate) =>
+      (candidate.code || candidate.title || '').trim().toLocaleLowerCase('he-IL') === code
+    )
+
+    if (!item) {
+      setError(`לא נמצא מוצר עם הקוד ${addCodeByRental[rental._id]}`)
+      return
+    }
+    if (!item.availableOnDate || quantity > item.availableQuantity) {
+      setError(`המלאי של ${item.code || item.title} אינו מספיק. נותרו ${item.availableQuantity ?? 0} יחידות`)
+      return
+    }
+
+    setAddedEntriesByRental((prev) => ({
+      ...prev,
+      [rental._id]: [...(prev[rental._id] || []), { item, quantity }]
+        .reduce((entries, entry) => {
+          const existing = entries.find((candidate) => (candidate.item._id || candidate.item) === entry.item._id)
+          if (existing) existing.quantity += entry.quantity
+          else entries.push({ item: entry.item, quantity: entry.quantity })
+          return entries
+        }, [])
+    }))
+    setAddCodeByRental((prev) => ({ ...prev, [rental._id]: '' }))
   }
 
   const saveEdit = async (event, rental) => {
@@ -72,18 +127,39 @@ const AdminRentals = () => {
 
     try {
       const form = new FormData(event.target)
-      const nextGroups = rental.groups.map((group, groupIndex) => ({
-        items: group.items.map((entry, itemIndex) => {
+      const removedKeys = removedEntriesByRental[rental._id] || []
+      const regularItems = []
+      const tableclothItems = []
+
+      const addEntry = (entry, quantity) => {
+        const item = entry.item || entry
+        const itemId = item._id || item
+        const target = item.category === 'מפות' ? tableclothItems : regularItems
+        const existing = target.find((candidate) => candidate.item === itemId)
+        if (existing) existing.quantity += quantity
+        else target.push({ item: itemId, quantity })
+      }
+
+      rental.groups.forEach((group, groupIndex) => {
+        group.items.forEach((entry, itemIndex) => {
+          if (removedKeys.includes(`${groupIndex}-${itemIndex}`)) return
+
           const value = Number(form.get(`quantity-${groupIndex}-${itemIndex}`))
           if (!Number.isFinite(value) || value < 1) {
             throw new Error('כמות לכל פריט חייבת להיות לפחות 1')
           }
-          return {
-            item: entry.item?._id || entry.item,
-            quantity: value
-          }
+          addEntry(entry, value)
         })
-      }))
+      })
+
+      ;(addedEntriesByRental[rental._id] || []).forEach((entry) => {
+        addEntry(entry, entry.quantity)
+      })
+
+      const nextGroups = []
+      if (tableclothItems.length) nextGroups.push({ items: tableclothItems })
+      if (regularItems.length) nextGroups.push({ items: regularItems })
+      if (nextGroups.length === 0) throw new Error('ההזמנה חייבת להכיל לפחות פריט אחד')
 
       await api.put(`rentals/${rental._id}`, {
         groups: nextGroups
@@ -175,7 +251,7 @@ const AdminRentals = () => {
                   <p><strong>איסוף:</strong> {date(group.pickupDate)} | <strong>החזרה:</strong> {date(group.returnDate)}</p>
                   <ul className='order-items-list'>
                     {group.items?.map((entry, itemIndex) => (
-                      <li key={`${entry.item?._id || entry.item}-${itemIndex}`} className='order-item-row'>
+                      !(removedEntriesByRental[rental._id] || []).includes(`${groupIndex}-${itemIndex}`) && <li key={`${entry.item?._id || entry.item}-${itemIndex}`} className='order-item-row'>
                         <div className='order-item-image-wrap'>
                           {entry.item?.images?.[0] && <img src={getUploadUrl(entry.item.images[0])} alt={entry.item.code || entry.item.title || 'פריט'} className='order-item-image' />}
                         </div>
@@ -190,12 +266,64 @@ const AdminRentals = () => {
                             כמות
                             <input name={`quantity-${groupIndex}-${itemIndex}`} type='number' min='1' defaultValue={entry.quantity} required />
                           </label>
+                          <button type='button' className='admin-secondary-btn' onClick={() => removeEntry(rental._id, groupIndex, itemIndex)}>הורד מההזמנה</button>
                         </div>
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
+
+              {(addedEntriesByRental[rental._id] || []).length > 0 && (
+                <div className='admin-rental-added-items'>
+                  <h3>פריטים שיוספו</h3>
+                  <ul className='order-items-list'>
+                    {(addedEntriesByRental[rental._id] || []).map((entry) => (
+                      <li key={entry.item._id} className='order-item-row'>
+                        <div className='order-item-text'>
+                          <h4>{entry.item.code || entry.item.title}</h4>
+                          <p>כמות: {entry.quantity}</p>
+                          <button
+                            type='button'
+                            className='admin-secondary-btn'
+                            onClick={() => setAddedEntriesByRental((prev) => ({
+                              ...prev,
+                              [rental._id]: (prev[rental._id] || []).filter((candidate) => candidate.item._id !== entry.item._id)
+                            }))}
+                          >
+                            בטל הוספה
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className='admin-rental-add-item'>
+                <h3>הוספת פריט לפי קוד</h3>
+                <div className='admin-rental-add-fields'>
+                  <label>
+                    קוד
+                    <input
+                      type='text'
+                      value={addCodeByRental[rental._id] || ''}
+                      onChange={(event) => setAddCodeByRental((prev) => ({ ...prev, [rental._id]: event.target.value }))}
+                      placeholder='לדוגמה: 123'
+                    />
+                  </label>
+                  <label>
+                    כמות
+                    <input
+                      type='number'
+                      min='1'
+                      value={addQuantityByRental[rental._id] || 1}
+                      onChange={(event) => setAddQuantityByRental((prev) => ({ ...prev, [rental._id]: event.target.value }))}
+                    />
+                  </label>
+                  <button type='button' className='admin-secondary-btn' onClick={() => addItemByCode(rental)}>הוסף להזמנה</button>
+                </div>
+              </div>
 
               <div className='admin-item-actions'>
                 <button type='submit' disabled={savingRentalId === rental._id}>{savingRentalId === rental._id ? 'שומר...' : 'שמור'}</button>

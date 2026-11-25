@@ -3152,6 +3152,29 @@ html.accessibility-reduce-motion *::after {
   margin-top: 12px;
 }
 
+.admin-rental-add-item {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-rental-add-fields {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-rental-add-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-rental-add-fields input {
+  min-height: 42px;
+}
+
 .admin-status-btn {
   padding: 8px 14px;
   background-color: #2563eb;
